@@ -8,6 +8,7 @@
 import SpriteKit
 import GameplayKit
 
+
 class GameScene: SKScene {
     
     var entities = [GKEntity]()
@@ -17,12 +18,60 @@ class GameScene: SKScene {
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
     
+    // 当前关卡
+    private var currentLevel: Int = 1
+    
+    // 背景图片节点
+    private var backgroundNode: SKSpriteNode?
+    
+    override init(size: CGSize) {
+        super.init(size: size)
+        // 设置默认背景颜色为深灰色
+        backgroundColor = SKColor.darkGray
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // 配置关卡
+    func configureLevel(level: Int) {
+        currentLevel = level
+        setupBackground()
+    }
+    
+    // 设置背景
+    private func setupBackground() {
+        // 根据关卡号选择背景图片（level1 -> level1，level2 -> level2，以此类推）
+        print("当前关卡为\(currentLevel)")
+        
+        let backgroundName = "level-\(currentLevel)"
+        
+        // 创建背景精灵节点
+        backgroundNode = SKSpriteNode(imageNamed: backgroundName)
+        
+        if let backgroundNode = backgroundNode {
+            // 设置背景位置为屏幕中心
+            backgroundNode.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+            
+            // 调整背景大小以填充整个屏幕
+            backgroundNode.size = self.size
+            
+            // 将背景添加到场景
+            addChild(backgroundNode)
+        } else {
+            print("未能加载背景图片：(backgroundName)")
+            // 如果指定的关卡背景不存在，则使用默认背景
+            backgroundColor = SKColor.darkGray
+        }
+    }
+    
     override func sceneDidLoad() {
 
         self.lastUpdateTime = 0
         
         // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
+        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode 
         if let label = self.label {
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
