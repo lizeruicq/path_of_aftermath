@@ -1,7 +1,7 @@
-// Runner僵尸子类
+// Walker僵尸子类
 import SpriteKit
 
-class Runner: Zombie {
+class Walker: Zombie {
     // 移动速度（重写父类属性）
     override var speed: CGFloat {
         get {
@@ -13,12 +13,8 @@ class Runner: Zombie {
     }
 
     init() {
-        // 使用walker的第一帧初始化，但设置不同的颜色以区分
-        super.init(imageNamed: "walker_move_1", speed: 20, health: 5, damage: 5)
-
-        // 设置颜色为红色以区分
-        self.color = .red
-        self.colorBlendFactor = 0.5
+        // 使用第一帧初始化
+        super.init(imageNamed: "walker_move_1", speed: 30, health: 10, damage: 10)
 
         // 设置各种状态的动画
         setupAnimations()
@@ -52,8 +48,8 @@ class Runner: Zombie {
             frames.append(texture)
         }
 
-        // 创建动画动作（比Walker更快的动画）
-        let animation = SKAction.animate(with: frames, timePerFrame: 0.07)
+        // 创建动画动作
+        let animation = SKAction.animate(with: frames, timePerFrame: 0.1)
 
         // 创建永久循环动作
         let repeatForever = SKAction.repeatForever(animation)
@@ -79,10 +75,10 @@ class Runner: Zombie {
         }
 
         // 创建攻击动画（更快的帧率）
-        let animation = SKAction.animate(with: frames, timePerFrame: 0.05) // Runner攻击更快
+        let animation = SKAction.animate(with: frames, timePerFrame: 0.08)
 
-        // 创建重复动作（攻击动作重复4次）
-        let repeatAction = SKAction.repeat(animation, count: 4)
+        // 创建重复动作（攻击动作重复3次）
+        let repeatAction = SKAction.repeat(animation, count: 3)
 
         // 攻击完成后恢复移动状态
         let resumeMovingAction = SKAction.run { [weak self] in
@@ -105,13 +101,13 @@ class Runner: Zombie {
         // 由于没有专门的死亡动画帧，我们使用颜色变化和缩放效果
 
         // 创建颜色变化动作（变灰）
-        let colorizeAction = SKAction.colorize(with: .gray, colorBlendFactor: 0.8, duration: 0.2)
+        let colorizeAction = SKAction.colorize(with: .gray, colorBlendFactor: 0.8, duration: 0.3)
 
         // 创建旋转动作（倒下）
-        let rotateAction = SKAction.rotate(toAngle: CGFloat.pi / 2, duration: 0.3)
+        let rotateAction = SKAction.rotate(toAngle: CGFloat.pi / 2, duration: 0.5)
 
         // 创建缩放动作（略微缩小）
-        let scaleAction = SKAction.scale(to: 0.8, duration: 0.2)
+        let scaleAction = SKAction.scale(to: 0.8, duration: 0.3)
 
         // 组合动作
         let dieAction = SKAction.group([colorizeAction, rotateAction, scaleAction])
