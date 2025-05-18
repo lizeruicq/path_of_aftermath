@@ -19,12 +19,14 @@ class TowerFactory {
         switch type {
         case .rifle:
             return Rifle()
-        case .machineGun:
-            return MachineGun()
-        case .sniper:
-            return Sniper()
-        case .rocket:
-            return Rocket()
+        case .shotgun:
+            return ShotGun()
+//        case .machineGun:
+//            return MachineGun()
+//        case .sniper:
+//            return Sniper()
+//        case .rocket:
+//            return Rocket()
         }
     }
     

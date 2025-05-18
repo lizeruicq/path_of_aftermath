@@ -40,7 +40,7 @@ class GameManager {
     weak var gameScene: GameScene?
 
     // 倒计时时间（秒）
-    private(set) var countdownTime: Int = 10
+    private(set) var countdownTime: Int = 5
 
     // 倒计时标签
     private var countdownLabel: SKLabelNode?
@@ -59,7 +59,7 @@ class GameManager {
         gameState = .waiting
         currentWave = 0
         activeZombies.removeAll()
-        countdownTime = 10
+        countdownTime = 5
     }
 
     // 配置关卡
@@ -107,7 +107,7 @@ class GameManager {
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
         label.position = CGPoint.zero
-        
+
 
         // 添加文本到按钮
         button.addChild(label)
@@ -152,7 +152,7 @@ class GameManager {
         countdownLabel = label
 
         // 重置倒计时时间
-        countdownTime = 10
+        countdownTime = 5
 
         // 创建倒计时动作
         let countdown = SKAction.sequence([
@@ -165,7 +165,7 @@ class GameManager {
         ])
 
         let countdownSequence = SKAction.sequence([
-            SKAction.repeat(countdown, count: 10),
+            SKAction.repeat(countdown, count: 5),
             SKAction.run { [weak self] in
                 guard let self = self else { return }
                 self.countdownLabel?.removeFromParent()
@@ -225,6 +225,16 @@ class GameManager {
             centerColumnPositions.append(xPos)
         }
 
+        // 用于跟踪每列最后一个僵尸的生成时间
+        var lastSpawnTimeByColumn: [CGFloat: TimeInterval] = [:]
+        // 初始化每列的最后生成时间为0
+        for xPos in centerColumnPositions {
+            lastSpawnTimeByColumn[xPos] = 0
+        }
+
+        // 当前总延迟时间
+        var currentTotalDelay: TimeInterval = 0
+
         // 遍历当前波次的僵尸配置
         for zombieConfig in currentWaveZombies {
             // 获取僵尸类型和数量
@@ -243,8 +253,13 @@ class GameManager {
                 let randomIndex = Int.random(in: 0..<centerColumnPositions.count)
                 let xPos = centerColumnPositions[randomIndex]
 
-                // 设置僵尸初始位置
-                zombie.position = CGPoint(x: xPos, y: scene.size.height + zombie.size.height)
+                // 计算垂直偏移，确保同一列的僵尸在垂直方向上有足够间隔
+                // 使用僵尸索引来计算垂直偏移，确保每个僵尸的位置不同
+                let verticalOffset = CGFloat(i) * zombie.size.height * 1.0 // 使用僵尸高度的1倍作为垂直间隔
+
+                // 设置僵尸初始位置，添加垂直偏移
+                let initialY = scene.size.height + verticalOffset
+                zombie.position = CGPoint(x: xPos, y: initialY)
 
                 // 添加僵尸到场景
                 scene.addChild(zombie)
@@ -253,26 +268,23 @@ class GameManager {
                 activeZombies.append(zombie)
 
                 // 计算移动时间（基于僵尸速度）
-                let baseDuration = TimeInterval(scene.size.height / zombie.speed)
+                // 由于增加了垂直偏移，需要调整移动时间
+                let totalDistance = initialY + zombie.size.height // 从初始位置到屏幕底部的总距离
+                let baseDuration = TimeInterval(totalDistance / zombie.speed)
 
-                // 添加随机延迟（0到1秒）使僵尸出现时间有差异
-                let randomDelay = TimeInterval.random(in: 0...1.0)
+                // 不添加任何延迟，所有僵尸同时开始移动
+                let totalDelay: TimeInterval = 0
+
+                print("僵尸\(i+1)生成在x=\(xPos)，y=\(initialY)，无延迟")
 
                 // 计算目标位置（屏幕底部以下）
                 let destinationY = -zombie.size.height
                 let destination = CGPoint(x: zombie.position.x, y: destinationY)
 
-                // 创建延迟动作
-                let delayAction = SKAction.wait(forDuration: randomDelay * Double(i % 3 + 1))
-
-                // 延迟后开始移动
-                let startMovingAction = SKAction.run {
-                    // 使用僵尸的startMoving方法
-                    zombie.startMoving(to: destination, duration: baseDuration)
-                }
-
-                // 运行延迟后开始移动的序列
-                zombie.run(SKAction.sequence([delayAction, startMovingAction]))
+                // 直接开始移动，不添加延迟
+                // 使用僵尸的startMoving方法
+                zombie.startMoving(to: destination, duration: baseDuration)
+                print("僵尸开始移动，从y=\(zombie.position.y)到y=\(destinationY)，持续时间=\(baseDuration)秒")
             }
         }
     }
@@ -282,10 +294,10 @@ class GameManager {
         switch type {
         case .walker:
             return Walker()
-        case .runner:
-            return Runner()
-        case .tank:
-            return Tank()
+//        case .runner:
+//            return Runner()
+//        case .tank:
+//            return Tank()
         }
     }
 

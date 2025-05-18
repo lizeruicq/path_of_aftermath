@@ -7,7 +7,7 @@
 
 import SpriteKit
 
-class Rifle: Defend {
+class ShotGun: Defend {
     // 子弹速度
     private let bulletSpeed: CGFloat = 300.0
     
@@ -21,13 +21,13 @@ class Rifle: Defend {
     init() {
         // 使用步枪特定的属性初始化
         super.init(
-            imageName: "rifle_idle", // 步枪炮塔图片名称
-            name: "步枪手",
+            imageName: "shotgun_idle", // 步枪炮塔图片名称
+            name: "霰弹枪手",
             attackPower: 5,          // 攻击力
-            fireRate: 2.0,           // 射速（每秒2次）
+            fireRate: 1.0,           // 射速（每秒2次）
             health: 50,              // 生命值
-            price: 100,              // 价格
-            attackRange: 200.0       // 攻击范围
+            price: 150,              // 价格
+            attackRange: 100.0       // 攻击范围
         )
         
         // 设置步枪特有的属性

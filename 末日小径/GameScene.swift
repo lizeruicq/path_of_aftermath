@@ -19,7 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var spinnyNode : SKShapeNode?
 
     // 当前关卡
-    private var currentLevel: Int = 1
+    var currentLevel: Int = 1
 
     // 背景图片节点
     private var backgroundNode: SKSpriteNode?
@@ -154,6 +154,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let location = touch.location(in: self)
         let touchedNodes = nodes(at: location)
 
+        print("触摸位置: \(location)")
+
         // 检查是否点击了准备按钮
         for node in touchedNodes {
             if node.name == "readyButton" || node.parent?.name == "readyButton" {
@@ -213,12 +215,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // 僵尸和炮塔碰撞
         if (bodyA.categoryBitMask == zombieCategory && bodyB.categoryBitMask == towerCategory) {
             if let zombie = bodyA.node as? Zombie, let tower = bodyB.node {
-                gameManager.handleZombieTowerCollision(zombie: zombie, tower: tower)
+                // 检查僵尸和炮塔是否在同一列
+                if isSameColumn(zombie: zombie, tower: tower) {
+                    gameManager.handleZombieTowerCollision(zombie: zombie, tower: tower)
+                }
             }
         } else if (bodyA.categoryBitMask == towerCategory && bodyB.categoryBitMask == zombieCategory) {
             if let zombie = bodyB.node as? Zombie, let tower = bodyA.node {
-                gameManager.handleZombieTowerCollision(zombie: zombie, tower: tower)
+                // 检查僵尸和炮塔是否在同一列
+                if isSameColumn(zombie: zombie, tower: tower) {
+                    gameManager.handleZombieTowerCollision(zombie: zombie, tower: tower)
+                }
             }
         }
+    }
+
+    // 检查僵尸和炮塔是否在同一列
+    private func isSameColumn(zombie: Zombie, tower: SKNode) -> Bool {
+        // 获取僵尸和炮塔的X坐标（在场景坐标系中）
+        let zombieX = zombie.position.x
+        let towerX = tower.convert(CGPoint.zero, to: self).x
+
+        // 计算列宽（假设有9列）
+        let columnWidth = self.size.width / 9
+
+        // 计算僵尸和炮塔所在的列
+        let zombieColumn = Int(zombieX / columnWidth)
+        let towerColumn = Int(towerX / columnWidth)
+
+        // 打印调试信息
+        print("僵尸X坐标: \(zombieX), 列: \(zombieColumn), 炮塔X坐标: \(towerX), 列: \(towerColumn)")
+
+        // 检查是否在同一列
+        return zombieColumn == towerColumn
     }
 }

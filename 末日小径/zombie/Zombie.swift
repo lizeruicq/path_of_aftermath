@@ -174,22 +174,37 @@ class Zombie: SKSpriteNode {
             return
         }
 
+        print("僵尸状态从\(currentState)变为\(newState)")
+
+        // 移除当前动画
+        self.removeAction(forKey: "animation")
+
+        // 短暂延迟，确保动画切换平滑
+        let waitAction = SKAction.wait(forDuration: 0.05)
+
         // 更新当前状态
         currentState = newState
 
         // 根据新状态执行相应的动画
-        switch newState {
-        case .moving:
-            // 播放移动动画
-            if let moveAnimation = moveAnimation {
-                self.run(moveAnimation, withKey: "animation")
+        let startAnimationAction = SKAction.run { [weak self] in
+            guard let self = self else { return }
+
+            switch newState {
+            case .moving:
+                // 播放移动动画
+                if let moveAnimation = self.moveAnimation {
+                    self.run(moveAnimation, withKey: "animation")
+                }
+            case .attacking:
+                // 攻击动画在attack方法中处理
+                break
+            case .dying:
+                // 死亡动画在die方法中处理
+                break
             }
-        case .attacking:
-            // 攻击动画在attack方法中处理
-            break
-        case .dying:
-            // 死亡动画在die方法中处理
-            break
         }
+
+        // 运行动画序列
+        self.run(SKAction.sequence([waitAction, startAnimationAction]))
     }
 }

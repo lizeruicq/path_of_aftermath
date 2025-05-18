@@ -8,7 +8,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameSceneWithGrid: GameScene {
+class GameSceneWithGrid: GameScene, BuildPanelDelegate {
 
     // 网格尺寸
     let gridRows: Int = 19
@@ -85,20 +85,30 @@ class GameSceneWithGrid: GameScene {
     // 上次更新时间
     private var lastUpdateTime: TimeInterval = 0
 
+    // 建造面板
+    private var buildPanel: BuildPanel!
+
+    // 当前选中的格子
+    private var selectedCell: GridCell?
+
     override func didMove(to view: SKView) {
-
-
-        // 创建网格
-        createGrid()
+        // 确保场景可以接收触摸事件
+        self.isUserInteractionEnabled = true
 
         // 设置场景
         setupScene()
 
         // 加载网格配置
         loadGridConfiguration()
-//
-//        // 创建网格
+
+        // 创建网格
         setupGrid()
+
+        // 添加点击处理
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCellTap(_:)))
+        view.addGestureRecognizer(tapRecognizer)
+
+        print("场景初始化完成，isUserInteractionEnabled = \(self.isUserInteractionEnabled)")
     }
 
     // 设置场景基本元素
@@ -110,7 +120,24 @@ class GameSceneWithGrid: GameScene {
         gridContainer = SKNode()
         gridContainer.position = CGPoint(x: 0, y: 0)
         gridContainer.zPosition = 10
+        gridContainer.name = "gridContainer"
+        gridContainer.isUserInteractionEnabled = true
         addChild(gridContainer)
+
+        print("创建网格容器节点")
+
+        // 创建建造面板
+        setupBuildPanel()
+    }
+
+    // 设置建造面板
+    private func setupBuildPanel() {
+        // 创建建造面板
+        buildPanel = BuildPanel(size: self.size)
+        buildPanel.delegate = self
+
+        // 添加到场景
+        addChild(buildPanel)
     }
 
     // 设置背景
@@ -146,6 +173,8 @@ class GameSceneWithGrid: GameScene {
         let cellHeight = self.size.height / CGFloat(gridRows)
         let cellSize = CGSize(width: cellWidth, height: cellHeight)
 
+        print("设置网格: 单元格大小 = \(cellSize)")
+
         // 初始化网格单元格数组（使用可选类型，因为不是所有位置都会有单元格）
         var tempGridCells: [[GridCell?]] = Array(repeating: Array(repeating: nil, count: gridColumns), count: gridRows)
 
@@ -166,6 +195,8 @@ class GameSceneWithGrid: GameScene {
                     // 将单元格添加到网格容器
                     gridContainer.addChild(cell)
 
+                    print("添加单元格: row=\(row), column=\(column), position=\(cell.position)")
+
                     // 存储单元格引用
                     tempGridCells[row][column] = cell
                 }
@@ -185,6 +216,7 @@ class GameSceneWithGrid: GameScene {
                 gridCells.append(rowCells)
             }
         }
+
     }
 
     // 更新方法
@@ -197,6 +229,139 @@ class GameSceneWithGrid: GameScene {
         let dt = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
 
-        // 这里可以添加游戏逻辑更新
+        // 更新所有炮塔
+        updateTowers(deltaTime: dt)
+
+        // 调用父类的更新方法
+        super.update(currentTime)
+    }
+
+    // 更新所有炮塔
+    private func updateTowers(deltaTime: TimeInterval) {
+        // 遍历所有网格单元格
+        for row in gridCells {
+            for cell in row {
+                // 更新单元格中的炮塔
+                cell.update(deltaTime: deltaTime)
+            }
+        }
+
+
+
+
+    }
+
+    // 处理触摸事件
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+
+        // 不在这里处理触摸事件，而是让手势识别器来处理
+        print("touchesBegan 被调用，但不处理触摸事件")
+        return
+
+
+//        // 检查是否点击了网格单元格
+//
+//        print("点击的节点: \(touchedNode), 类型: \(type(of: touchedNode)), 名称: \(touchedNode.name ?? "无名称")")
+//
+//        // 如果点击的不是GridCell，尝试查找父节点
+//        var nodeToCheck = touchedNode
+//        var depth = 0
+//        while !(nodeToCheck is GridCell) && nodeToCheck.parent != nil && depth < 5 {
+//            nodeToCheck = nodeToCheck.parent!
+//            depth += 1
+//            print("检查父节点: \(nodeToCheck), 类型: \(type(of: nodeToCheck)), 名称: \(nodeToCheck.name ?? "无名称")")
+//        }
+//
+//        // 如果点击了网格单元格
+//        if let cell = nodeToCheck as? GridCell {
+//            print("找到GridCell: row=\(cell.row), column=\(cell.column), isBuildable=\(cell.isBuildable), hasTower=\(cell.hasTower)")
+//
+//            // 高亮显示
+//            cell.highlight()
+//
+//            // 如果单元格可建造且没有炮塔，显示建造面板
+//            if cell.isBuildable && !cell.hasTower {
+//                print("点击可建造单元格，显示建造面板")
+//                // 保存选中的格子
+//                selectedCell = cell
+//
+//                // 配置并显示建造面板
+//                buildPanel.configure(forLevel: currentLevel, selectedCell: cell)
+//                buildPanel.show()
+//            } else {
+//                print("单元格不满足条件: isBuildable=\(cell.isBuildable), hasTower=\(cell.hasTower)")
+//            }
+//        } else {
+//            print("未找到GridCell，点击了其他区域，隐藏建造面板")
+//            // 如果点击了其他区域，隐藏建造面板
+//            buildPanel.hide()
+//            selectedCell = nil
+//        }
+    }
+
+    // 处理单元格点击
+    @objc func handleCellTap(_ recognizer: UITapGestureRecognizer) {
+        // 获取点击位置
+        let location = recognizer.location(in: self.view)
+        let sceneLocation = self.convertPoint(fromView: location)
+
+        print("处理单元格点击: 位置=\(sceneLocation)")
+
+        // 遍历所有网格单元格，检查点击位置是否在单元格内
+        for row in gridCells {
+            for cell in row {
+                // 将点击位置转换为单元格坐标系
+                let locationInCell = self.convert(sceneLocation, to: cell)
+
+                // 检查点击位置是否在单元格内
+                if cell.contains(locationInCell) {
+                    print("点击了单元格: row=\(cell.row), column=\(cell.column)")
+
+                    // 高亮显示
+                    cell.highlight()
+
+                    // 如果单元格可建造且没有炮塔，显示建造面板
+                    if cell.isBuildable && !cell.hasTower {
+                        print("点击可建造单元格，显示建造面板")
+                        // 保存选中的格子
+                        selectedCell = cell
+
+                        // 配置并显示建造面板
+                        buildPanel.configure(forLevel: currentLevel, selectedCell: cell)
+                        buildPanel.show()
+                    } else {
+                        print("单元格不满足条件: isBuildable=\(cell.isBuildable), hasTower=\(cell.hasTower)")
+                    }
+
+                    // 找到了单元格，不需要继续遍历
+                    return
+                }
+            }
+        }
+
+        // 如果点击了其他区域，隐藏建造面板
+        print("点击了其他区域，隐藏建造面板")
+        buildPanel.hide()
+        selectedCell = nil
+    }
+
+    // BuildPanelDelegate方法：处理炮塔选择
+    func didSelectTower(_ towerType: TowerType) {
+        // 确保有选中的格子
+        guard let cell = selectedCell else { return }
+
+        // 创建选中类型的炮塔
+        if let tower = TowerFactory.shared.createTower(type: towerType) {
+            // 尝试放置炮塔
+            if cell.placeTower(tower) {
+                // 放置成功，播放音效
+                let placeSoundAction = SKAction.playSoundFileNamed("tower_place.mp3", waitForCompletion: false)
+                run(placeSoundAction)
+
+                // 清除选中的格子
+                selectedCell = nil
+            }
+        }
     }
 }
