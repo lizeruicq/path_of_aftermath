@@ -109,21 +109,34 @@ class LevelSelectionScene: SKScene {
                         print("无效的关卡索引: (index)")
                         return
                     }
-                    
+                    // // 1. 先尝试用 fileNamed: 加载，并向下转型到 GameScene
+                    // if let gameScene = SKScene(fileNamed: "GameScene") as? GameScene {
+                    //     // 2. 现在 gameScene 是非可选的 GameScene 可以安全使用
+                    //     gameScene.scaleMode = .aspectFill
+                    //     gameScene.configureLevel(level: index + 1)
+
+                    //     // 3. 创建过渡动画并呈现
+                    //     let transition = SKTransition.fade(withDuration: 1.0)
+                    //     self.view?.presentScene(gameScene, transition: transition)
+                    // } else {
+                    //     // 加载失败时的容错处理
+                    //     print("⚠️ 无法加载 GameScene.sks 或类型转换失败")
+                    // }
+
                     // 创建游戏场景并配置关卡
-                    let gameScene = GameSceneWithGrid(size: self.size)
-                    gameScene.scaleMode = .aspectFill
-                    
-                    // 配置对应关卡
-                    gameScene.configureLevel(level: index + 1)
-                    
-                    // 场景切换动画
-                    let transition = SKTransition.fade(withDuration: 1.0)
-                    
-                    // 切换到游戏场景
-                    if let view = self.view {
-                        view.presentScene(gameScene, transition: transition)
-                    }
+                   let gameScene = GameSceneWithGrid(size: self.size)
+                   gameScene.scaleMode = .aspectFill
+                   
+                   // 配置对应关卡
+                   gameScene.configureLevel(level: index + 1)
+                   
+                   // 场景切换动画
+                   let transition = SKTransition.fade(withDuration: 1.0)
+                   
+                   // 切换到游戏场景
+                   if let view = self.view {
+                       view.presentScene(gameScene, transition: transition)
+                   }
                 }
             }
         }

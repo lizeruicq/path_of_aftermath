@@ -20,12 +20,24 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
 
-            // 创建主菜单场景
             let mainMenuScene = MainMenuScene(size: view.bounds.size)
-            mainMenuScene.scaleMode = .aspectFill
+                mainMenuScene.scaleMode = .aspectFill
+                // 显示主菜单场景
+                view.presentScene(mainMenuScene)
 
-            // 显示主菜单场景
-            view.presentScene(mainMenuScene)
+            // // 尝试从.sks文件加载GameScene（用于测试roade节点）
+            // if let scene = SKScene(fileNamed: "GameScene") {
+            //     scene.scaleMode = .aspectFill
+            //     view.presentScene(scene)
+            //     print("成功从GameScene.sks加载场景")
+            // } else {
+            //     print("无法从GameScene.sks加载场景，使用MainMenuScene代替")
+            //     // 创建主菜单场景
+            //     let mainMenuScene = MainMenuScene(size: view.bounds.size)
+            //     mainMenuScene.scaleMode = .aspectFill
+            //     // 显示主菜单场景
+            //     view.presentScene(mainMenuScene)
+            // }
         }
     }
 
