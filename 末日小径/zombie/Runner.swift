@@ -14,7 +14,7 @@ class Runner: Zombie {
 
     init() {
         // 使用walker的第一帧初始化，但设置不同的颜色以区分
-        super.init(imageNamed: "walker_move_1", speed: 20, health: 5, damage: 5)
+        super.init(imageNamed: "walker_move_1", speed: 20, health: 5, damage: 5, attackrate: 1)
 
         // 设置颜色为红色以区分
         self.color = .red

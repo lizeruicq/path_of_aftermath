@@ -14,7 +14,7 @@ class Walker: Zombie {
 
     init() {
         // 使用第一帧初始化
-        super.init(imageNamed: "walker_move_1", speed: 30, health: 10, damage: 10)
+        super.init(imageNamed: "walker_move_1", speed: 30, health: 30, damage: 10, attackrate: 1)
 
         // 设置各种状态的动画
         setupAnimations()
@@ -103,14 +103,14 @@ class Walker: Zombie {
         // 创建颜色变化动作（变灰）
         let colorizeAction = SKAction.colorize(with: .gray, colorBlendFactor: 0.8, duration: 0.3)
 
-        // 创建旋转动作（倒下）
-        let rotateAction = SKAction.rotate(toAngle: CGFloat.pi / 2, duration: 0.5)
+//        // 创建旋转动作（倒下）
+//        let rotateAction = SKAction.rotate(toAngle: CGFloat.pi / 2, duration: 0.5)
 
         // 创建缩放动作（略微缩小）
-        let scaleAction = SKAction.scale(to: 0.8, duration: 0.3)
+//        let scaleAction = SKAction.scale(to: 0.8, duration: 0.3)
 
         // 组合动作
-        let dieAction = SKAction.group([colorizeAction, rotateAction, scaleAction])
+        let dieAction = SKAction.group([colorizeAction])
 
         // 保存死亡动画
         dieAnimation = dieAction

@@ -48,8 +48,8 @@ class GameManager {
     // 准备按钮
     private var readyButton: SKSpriteNode?
 
-    // 活着的僵尸
-    private var activeZombies: [Zombie] = []
+    // 活着的僵尸 (公开属性以便Defend类可以访问)
+    private(set) var activeZombies: [Zombie] = []
 
     // 私有初始化方法（单例模式）
     private init() {}
@@ -188,6 +188,9 @@ class GameManager {
             // 更新游戏状态
             gameState = .waveActive
 
+            // 清除上一波的僵尸
+            clearPreviousWaveZombies()
+
             // 获取当前波次的僵尸配置
             if let waveConfig = waveConfigs[currentWave - 1] as? [[String: Any]] {
                 // 多种僵尸类型的情况
@@ -204,6 +207,18 @@ class GameManager {
             gameState = .completed
             print("关卡完成！")
         }
+    }
+
+    // 清除上一波的僵尸
+    private func clearPreviousWaveZombies() {
+        // 从场景中移除所有活着的僵尸
+        for zombie in activeZombies {
+            zombie.removeFromParent()
+        }
+
+        // 清空僵尸数组
+        activeZombies.removeAll()
+        print("已清除上一波的僵尸，数组现在为空")
     }
 
     // 生成僵尸

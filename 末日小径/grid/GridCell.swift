@@ -55,7 +55,7 @@ class GridCell: SKNode {
         // 初始外观
         updateAppearance()
 
-        print("创建GridCell: row=\(row), column=\(column), size=\(size), name=\(self.name ?? "无名称")")
+//        print("创建GridCell: row=\(row), column=\(column), size=\(size), name=\(self.name ?? "无名称")")
     }
 
     // 重写触摸事件处理方法，确保打印调试信息
@@ -73,7 +73,7 @@ class GridCell: SKNode {
         // 检查点击位置是否在矩形内
         let result = rect.contains(p)
 
-        print("GridCell contains: row=\(row), column=\(column), point=\(p), result=\(result)")
+//        print("GridCell contains: row=\(row), column=\(column), point=\(p), result=\(result)")
 
         return result
     }
@@ -114,7 +114,7 @@ class GridCell: SKNode {
         // 保存引用
         innerSquare = square
 
-        print("创建内部小方块: \(square), 位置: \(square.position), 大小: \(innerWidth)x\(innerHeight), 颜色: \(square.fillColor)")
+//        print("创建内部小方块: \(square), 位置: \(square.position), 大小: \(innerWidth)x\(innerHeight), 颜色: \(square.fillColor)")
     }
 
     // 更新外观，根据是否可建造和是否有炮塔设置不同颜色

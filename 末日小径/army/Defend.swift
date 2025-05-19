@@ -126,14 +126,15 @@ class Defend: SKSpriteNode {
 
     // 寻找新目标
     func findNewTarget() {
-        // 获取场景中的所有僵尸
+        // 获取场景
         guard let scene = self.scene else { return }
 
         var closestZombie: Zombie?
         var closestDistance: CGFloat = CGFloat.greatestFiniteMagnitude
 
-        // 获取炮塔在场景中的X坐标
-        let towerX = self.convert(CGPoint.zero, to: scene).x
+        // 获取炮塔在场景中的位置
+        let towerPositionInScene = self.convert(CGPoint.zero, to: scene)
+        let towerX = towerPositionInScene.x
 
         // 计算列宽（假设有9列）
         let columnWidth = scene.size.width / 9
@@ -141,34 +142,39 @@ class Defend: SKSpriteNode {
         // 计算炮塔所在的列
         let towerColumn = Int(towerX / columnWidth)
 
-        // 遍历场景中的所有节点
-        scene.enumerateChildNodes(withName: "//Zombie*") { (node, _) in
-            // 确保节点是僵尸类型
-            guard let zombie = node as? Zombie else { return }
+        print("炮塔场景坐标X=\(towerX)，所在列=\(towerColumn)")
 
-            // 确保僵尸没有死亡
-            if zombie.currentState == .dying {
-                return
+        // 从GameManager获取活着的僵尸数组
+        let zombies = GameManager.shared.activeZombies
+
+        // 遍历僵尸数组
+        for zombie in zombies {
+            // 确保僵尸没有死亡且仍在场景中
+            if zombie.currentState == .dying || zombie.parent == nil {
+                continue
             }
 
-            // 获取僵尸在场景中的X坐标
+            // 获取僵尸在场景中的X坐标（僵尸已经在场景坐标系中）
             let zombieX = zombie.position.x
 
             // 计算僵尸所在的列
             let zombieColumn = Int(zombieX / columnWidth)
 
+            print("僵尸坐标X=\(zombieX)，所在列=\(zombieColumn)")
+
             // 检查僵尸和炮塔是否在同一列
             if zombieColumn != towerColumn {
-                return
+                continue
             }
 
-            // 计算距离
+            // 计算距离（使用修改后的distanceTo方法，它会正确处理坐标系转换）
             let distance = self.distanceTo(target: zombie)
 
             // 如果在攻击范围内且比当前最近的僵尸更近，更新最近的僵尸
             if distance <= self.attackRange && distance < closestDistance {
                 closestZombie = zombie
                 closestDistance = distance
+                print("找到目标僵尸，距离=\(distance)，在攻击范围\(self.attackRange)内")
             }
         }
 
@@ -177,18 +183,34 @@ class Defend: SKSpriteNode {
             currentTarget = target
             changeState(to: .attacking)
             print("炮塔找到目标：列 \(towerColumn)")
+        } else {
+            print("未找到目标僵尸")
         }
     }
 
     // 计算到目标的距离
     private func distanceTo(target: SKNode) -> CGFloat {
-        let dx = target.position.x - self.position.x
-        let dy = target.position.y - self.position.y
+        // 将自己的位置转换到场景坐标系
+        guard let scene = self.scene else { return CGFloat.greatestFiniteMagnitude }
+        let selfPositionInScene = self.convert(CGPoint.zero, to: scene)
+
+        // 获取目标在场景坐标系中的位置
+        let targetPositionInScene = target.position
+
+        // 计算X和Y方向的距离
+        let dx = targetPositionInScene.x - selfPositionInScene.x
+        let dy = targetPositionInScene.y - selfPositionInScene.y
+
+        // 打印调试信息
+        print("炮塔场景坐标=\(selfPositionInScene)，僵尸坐标=\(targetPositionInScene)，距离=\(sqrt(dx*dx + dy*dy))")
+
+        // 返回欧几里得距离（直线距离）
         return sqrt(dx * dx + dy * dy)
     }
 
     // 攻击目标
     func attackTarget(_ target: Zombie) {
+
         // 子类实现具体的攻击效果
     }
 

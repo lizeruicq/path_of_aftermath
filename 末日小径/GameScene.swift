@@ -244,7 +244,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let towerColumn = Int(towerX / columnWidth)
 
         // 打印调试信息
-        print("僵尸X坐标: \(zombieX), 列: \(zombieColumn), 炮塔X坐标: \(towerX), 列: \(towerColumn)")
+        print("碰撞检测 - 僵尸X坐标: \(zombieX), 列: \(zombieColumn), 炮塔X坐标: \(towerX), 列: \(towerColumn)")
 
         // 检查是否在同一列
         return zombieColumn == towerColumn

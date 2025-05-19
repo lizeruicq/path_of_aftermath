@@ -29,6 +29,8 @@ class Zombie: SKSpriteNode {
             }
         }
     }
+    // 攻击频率
+    var attackRate: Double
 
     // 伤害
     var damage: Int
@@ -51,10 +53,11 @@ class Zombie: SKSpriteNode {
     // 当前动画动作
     private var currentAnimationAction: SKAction?
 
-    init(imageNamed name: String, speed: CGFloat, health: Int, damage: Int) {
+    init(imageNamed name: String, speed: CGFloat, health: Int, damage: Int, attackrate: Double) {
         self._speed = speed
         self.health = health
         self.damage = damage
+        self.attackRate = attackrate
         super.init(texture: SKTexture(imageNamed: name), color: .clear, size: CGSize(width: 50, height: 50))
 
         // 设置物理体
@@ -94,15 +97,16 @@ class Zombie: SKSpriteNode {
         // 保存当前移动动作引用
         currentMoveAction = moveAction
 
-        // 移动完成后移除僵尸
-        let removeAction = SKAction.run { [weak self] in
-            guard let self = self else { return }
-            // 通知GameManager移除僵尸
-            GameManager.shared.removeZombie(self)
-        }
+         // 移动完成后移除僵尸
+         let removeAction = SKAction.run { [weak self] in
+             guard let self = self else { return }
+             // 通知GameManager移除僵尸
+             GameManager.shared.removeZombie(self)
+         }
 
-        // 运行动作序列
-        self.run(SKAction.sequence([moveAction, removeAction]), withKey: "movement")
+//         运行动作序列
+         self.run(SKAction.sequence([moveAction, removeAction]), withKey: "movement")
+
     }
 
     // 停止移动
@@ -136,6 +140,63 @@ class Zombie: SKSpriteNode {
     func takeDamage(_ amount: Int) {
         // 减少血量
         health -= amount
+
+        // 如果僵尸还活着且不在攻击状态，添加被击中的反馈
+        if health > 0 && currentState != .attacking {
+            // 暂时停止移动
+            let currentPosition = self.position
+
+            // 移除当前的移动动作
+            self.removeAction(forKey: "movement")
+
+            // 创建轻微的抖动效果
+            let shakeRight = SKAction.moveBy(x: 2, y: 0, duration: 0.05)
+            let shakeLeft = SKAction.moveBy(x: -2, y: 0, duration: 0.05)
+            let shakeSequence = SKAction.sequence([shakeRight, shakeLeft, shakeRight, shakeLeft])
+
+            // 创建短暂的停顿
+            let pauseAction = SKAction.wait(forDuration: 0.2)
+
+            // 创建恢复移动的动作
+            let resumeAction = SKAction.run { [weak self] in
+                guard let self = self, self.health > 0, self.currentState != .dying else { return }
+
+                // 如果僵尸还活着且不在攻击状态，恢复移动
+                if self.currentState != .attacking {
+                    // 计算到屏幕底部的距离
+                    guard let scene = self.scene else { return }
+                    let destinationY = -self.size.height
+                    let destination = CGPoint(x: self.position.x, y: destinationY)
+
+                    // 计算剩余距离
+                    let remainingDistance = self.position.y - destinationY
+
+                    // 计算剩余时间（基于僵尸速度）
+                    let remainingDuration = TimeInterval(remainingDistance / self.speed)
+
+                    // 创建新的移动动作
+                    let newMoveAction = SKAction.move(to: destination, duration: remainingDuration)
+
+                    // 移动完成后移除僵尸
+                    let removeAction = SKAction.run { [weak self] in
+                        guard let self = self else { return }
+                        GameManager.shared.removeZombie(self)
+                    }
+
+                    // 运行新的动作序列
+                    self.run(SKAction.sequence([newMoveAction, removeAction]), withKey: "movement")
+                }
+            }
+
+            // 运行被击中反馈序列
+            self.run(SKAction.sequence([shakeSequence, pauseAction, resumeAction]))
+
+            // 添加闪烁效果
+            let fadeOut = SKAction.fadeAlpha(to: 0.5, duration: 0.1)
+            let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.1)
+            let flash = SKAction.sequence([fadeOut, fadeIn])
+            self.run(flash)
+        }
     }
 
     // 死亡
@@ -191,14 +252,17 @@ class Zombie: SKSpriteNode {
 
             switch newState {
             case .moving:
+            print("开始移动")
                 // 播放移动动画
                 if let moveAnimation = self.moveAnimation {
                     self.run(moveAnimation, withKey: "animation")
                 }
             case .attacking:
+            print("开始攻击")
                 // 攻击动画在attack方法中处理
                 break
             case .dying:
+            print("死亡")
                 // 死亡动画在die方法中处理
                 break
             }

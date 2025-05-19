@@ -195,7 +195,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate {
                     // 将单元格添加到网格容器
                     gridContainer.addChild(cell)
 
-                    print("添加单元格: row=\(row), column=\(column), position=\(cell.position)")
+//                    print("添加单元格: row=\(row), column=\(column), position=\(cell.position)")
 
                     // 存储单元格引用
                     tempGridCells[row][column] = cell
@@ -306,7 +306,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate {
         let location = recognizer.location(in: self.view)
         let sceneLocation = self.convertPoint(fromView: location)
 
-        print("处理单元格点击: 位置=\(sceneLocation)")
+//        print("处理单元格点击: 位置=\(sceneLocation)")
 
         // 遍历所有网格单元格，检查点击位置是否在单元格内
         for row in gridCells {
@@ -316,7 +316,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate {
 
                 // 检查点击位置是否在单元格内
                 if cell.contains(locationInCell) {
-                    print("点击了单元格: row=\(cell.row), column=\(cell.column)")
+//                    print("点击了单元格: row=\(cell.row), column=\(cell.column)")
 
                     // 高亮显示
                     cell.highlight()

@@ -32,7 +32,7 @@ let towerConfigs: [String: [String: Any]] = [
         "fireRate": 2.0,
         "health": 50,
         "price": 100,
-        "attackRange": 200.0
+        "attackRange": 300.0
     ],
     
     TowerType.shotgun.rawValue: [
@@ -42,7 +42,7 @@ let towerConfigs: [String: [String: Any]] = [
         "fireRate": 1.0,
         "health": 50,
         "price": 150,
-        "attackRange": 100.0
+        "attackRange": 300.0
     ],
     
 //    TowerType.machineGun.rawValue: [
@@ -83,6 +83,10 @@ let levelConfigs: [[String: Any]] = [
                     "enemyType": ZombieType.walker.rawValue,
                     "count": 5
             ],
+            [ // walker僵尸
+                    "enemyType": ZombieType.walker.rawValue,
+                    "count": 10
+            ]
         ],
         "availableTowers": [
             TowerType.rifle.rawValue
