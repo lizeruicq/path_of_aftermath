@@ -13,8 +13,9 @@ class Walker: Zombie {
     }
 
     init() {
-        // 使用第一帧初始化
-        super.init(imageNamed: "walker_move_1", speed: 30, health: 30, damage: 10, attackrate: 1)
+        // 使用ResourceManager获取纹理
+        let texture = ResourceManager.shared.getTexture(named: "walker_move_1")
+        super.init(texture: texture, speed: 30, health: 30, damage: 10, attackrate: 1)
 
         // 设置各种状态的动画
         setupAnimations()
@@ -38,27 +39,39 @@ class Walker: Zombie {
 
     // 设置移动动画
     private func setupMoveAnimation() {
-        // 创建动画帧数组
-        var frames: [SKTexture] = []
+        // 从ResourceManager获取动画
+        if let animation = ResourceManager.shared.createAnimation(forKey: "walker_move", timePerFrame: 0.1, repeatForever: true) {
+            // 保存移动动画
+            moveAnimation = animation
 
-        // 加载7帧动画
-        for i in 1...7 {
-            let textureName = "walker_move_\(i)"
-            let texture = SKTexture(imageNamed: textureName)
-            frames.append(texture)
+            // 默认播放移动动画
+            self.run(animation, withKey: "animation")
+        } else {
+            // 如果从ResourceManager获取失败，创建备用动画
+            print("警告：无法从ResourceManager获取walker_move动画，创建备用动画")
+
+            // 创建动画帧数组
+            var frames: [SKTexture] = []
+
+            // 加载7帧动画
+            for i in 1...7 {
+                let textureName = "walker_move_\(i)"
+                let texture = ResourceManager.shared.getTexture(named: textureName)
+                frames.append(texture)
+            }
+
+            // 创建动画动作
+            let animation = SKAction.animate(with: frames, timePerFrame: 0.1)
+
+            // 创建永久循环动作
+            let repeatForever = SKAction.repeatForever(animation)
+
+            // 保存移动动画
+            moveAnimation = repeatForever
+
+            // 默认播放移动动画
+            self.run(repeatForever, withKey: "animation")
         }
-
-        // 创建动画动作
-        let animation = SKAction.animate(with: frames, timePerFrame: 0.1)
-
-        // 创建永久循环动作
-        let repeatForever = SKAction.repeatForever(animation)
-
-        // 保存移动动画
-        moveAnimation = repeatForever
-
-        // 默认播放移动动画
-        self.run(repeatForever, withKey: "animation")
     }
 
     // 设置攻击动画
@@ -70,7 +83,7 @@ class Walker: Zombie {
         let attackFrameNames = ["walker_move_1", "walker_move_3", "walker_move_5", "walker_move_7"]
 
         for frameName in attackFrameNames {
-            let texture = SKTexture(imageNamed: frameName)
+            let texture = ResourceManager.shared.getTexture(named: frameName)
             frames.append(texture)
         }
 

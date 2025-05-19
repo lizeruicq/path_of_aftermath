@@ -19,9 +19,12 @@ class Rifle: Defend {
 
     // 初始化方法
     init() {
+        // 使用ResourceManager获取纹理
+        let texture = ResourceManager.shared.getTexture(named: "rifle_idle")
+
         // 使用步枪特定的属性初始化
         super.init(
-            imageName: "rifle_idle", // 步枪炮塔图片名称
+            texture: texture, // 使用ResourceManager获取的纹理
             name: "步枪手",
             attackPower: 5,          // 攻击力
             fireRate: 2.0,           // 射速（每秒2次）
@@ -147,49 +150,14 @@ class Rifle: Defend {
         self.run(soundAction)
     }
 
-    // 静态纹理缓存
-    static var shootTextureCache: [SKTexture]?
-
     // 开始攻击动画
     override func startAttackingAnimation() {
-        // 使用静态缓存，避免重复加载纹理
-        var frames: [SKTexture]
-
-        if let cachedTextures = Rifle.shootTextureCache {
-            // 使用缓存的纹理
-            frames = cachedTextures
-            print("使用缓存的Rifle射击动画纹理")
-        } else {
-            // 创建新的纹理数组
-            frames = []
-
-            // 加载3帧射击动画
-            for i in 1...3 {
-                let textureName = "rifle_shoot_\(i)"
-                // 使用高质量纹理过滤模式
-                let texture = SKTexture(imageNamed: textureName)
-                texture.filteringMode = .linear
-                frames.append(texture)
-            }
-
-            // 保存到静态缓存
-            Rifle.shootTextureCache = frames
-
-            // 预加载所有纹理，避免首次使用时的闪烁
-            SKTexture.preload(frames) {
-                print("Rifle射击动画纹理预加载完成")
-            }
-        }
-
-        // 保存原始纹理，用于动画结束后恢复
-//        let originalTexture = self.texture
-
-//         创建轻微的旋转动作，模拟炮塔瞄准
+        // 创建轻微的旋转动作，模拟炮塔瞄准
         let rotateRight = SKAction.rotate(byAngle: 0.05, duration: 0.1)
         let rotateLeft = SKAction.rotate(byAngle: -0.05, duration: 0.1)
         let rotateSequence = SKAction.sequence([rotateRight, rotateLeft])
 
-//         循环执行旋转动作
+        // 循环执行旋转动作
         self.run(SKAction.repeatForever(rotateSequence), withKey: "rotateAnimation")
     }
 
@@ -203,39 +171,35 @@ class Rifle: Defend {
         self.run(SKAction.rotate(toAngle: 0, duration: 0.1))
 
         // 恢复原始纹理
-        self.texture = SKTexture(imageNamed: "rifle_idle")
+        self.texture = ResourceManager.shared.getTexture(named: "rifle_idle")
     }
 
     // 播放射击动画
     private func playShootAnimation() {
-        // 如果缓存不存在，创建缓存
-        if Rifle.shootTextureCache == nil {
-            Rifle.shootTextureCache = []
+        // 从ResourceManager获取动画
+        if let animation = ResourceManager.shared.createAnimation(forKey: "rifle_shoot", timePerFrame: 0.05) {
+            // 播放射击动画
+            self.run(animation, withKey: "shootAnimation")
+        } else {
+            // 如果从ResourceManager获取失败，创建备用动画
+            print("警告：无法从ResourceManager获取rifle_shoot动画，创建备用动画")
+
+            // 创建动画帧数组
+            var frames: [SKTexture] = []
 
             // 加载3帧射击动画
             for i in 1...3 {
                 let textureName = "rifle_shoot_\(i)"
-                let texture = SKTexture(imageNamed: textureName)
-                texture.filteringMode = .linear
-                Rifle.shootTextureCache?.append(texture)
+                let texture = ResourceManager.shared.getTexture(named: textureName)
+                frames.append(texture)
             }
 
-            // 预加载所有纹理
-            if let textures = Rifle.shootTextureCache {
-                SKTexture.preload(textures) {
-                    print("Rifle射击动画纹理预加载完成")
-                }
-            }
+            // 创建射击动画
+            let shootAnimation = SKAction.animate(with: frames, timePerFrame: 0.05, resize: false, restore: true)
+
+            // 播放射击动画
+            self.run(shootAnimation, withKey: "shootAnimation")
         }
-
-        // 获取射击动画帧
-        guard let frames = Rifle.shootTextureCache else { return }
-
-        // 创建射击动画
-        let shootAnimation = SKAction.animate(with: frames, timePerFrame: 0.05, resize: false, restore: true)
-
-        // 播放射击动画
-        self.run(shootAnimation, withKey: "shootAnimation")
 
         // 播放射击音效
         playShootSound()

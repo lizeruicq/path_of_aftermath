@@ -137,7 +137,8 @@ class BuildPanel: SKNode {
 
             // 创建炮塔图片
             let imageName = towerConfig["image"] as? String ?? "default_tower"
-            let towerImage = SKSpriteNode(imageNamed: imageName)
+            let texture = ResourceManager.shared.getTexture(named: imageName)
+            let towerImage = SKSpriteNode(texture: texture)
             towerImage.size = CGSize(width: itemSize * 0.8, height: itemSize * 0.8)
             towerImage.position = CGPoint.zero
 

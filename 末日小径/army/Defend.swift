@@ -54,7 +54,26 @@ class Defend: SKSpriteNode {
         return 1.0 / fireRate
     }
 
-    // 初始化方法
+    // 使用纹理初始化
+    init(texture: SKTexture, name: String, attackPower: Int, fireRate: Double, health: Int, price: Int, attackRange: CGFloat) {
+        self.towerName = name
+        self.attackPower = attackPower
+        self.fireRate = fireRate
+        self.health = health
+        self.price = price
+        self.attackRange = attackRange
+
+        // 使用提供的纹理初始化精灵节点
+        super.init(texture: texture, color: .clear, size: CGSize(width: 50, height: 50))
+
+        // 设置名称
+        self.name = "tower_\(name)"
+
+        // 设置物理体
+        setupPhysicsBody()
+    }
+
+    // 兼容旧代码的初始化方法
     init(imageName: String, name: String, attackPower: Int, fireRate: Double, health: Int, price: Int, attackRange: CGFloat) {
         self.towerName = name
         self.attackPower = attackPower
@@ -63,8 +82,8 @@ class Defend: SKSpriteNode {
         self.price = price
         self.attackRange = attackRange
 
-        // 使用提供的图片初始化精灵节点
-        let texture = SKTexture(imageNamed: imageName)
+        // 使用ResourceManager获取纹理
+        let texture = ResourceManager.shared.getTexture(named: imageName)
         super.init(texture: texture, color: .clear, size: CGSize(width: 50, height: 50))
 
         // 设置名称

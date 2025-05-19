@@ -20,10 +20,30 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
 
-            let mainMenuScene = MainMenuScene(size: view.bounds.size)
-                mainMenuScene.scaleMode = .aspectFill
-                // 显示主菜单场景
-                view.presentScene(mainMenuScene)
+            // 预加载所有资源
+            ResourceManager.shared.preloadAllResources { success in
+                if success {
+                    print("应用启动时预加载所有资源成功")
+
+                    // 在主线程上创建并显示主菜单场景
+                    DispatchQueue.main.async {
+                        let mainMenuScene = MainMenuScene(size: view.bounds.size)
+                        mainMenuScene.scaleMode = .aspectFill
+                        // 显示主菜单场景
+                        view.presentScene(mainMenuScene)
+                    }
+                } else {
+                    print("应用启动时预加载资源失败")
+
+                    // 即使预加载失败，也显示主菜单场景
+                    DispatchQueue.main.async {
+                        let mainMenuScene = MainMenuScene(size: view.bounds.size)
+                        mainMenuScene.scaleMode = .aspectFill
+                        // 显示主菜单场景
+                        view.presentScene(mainMenuScene)
+                    }
+                }
+            }
 
             // // 尝试从.sks文件加载GameScene（用于测试roade节点）
             // if let scene = SKScene(fileNamed: "GameScene") {

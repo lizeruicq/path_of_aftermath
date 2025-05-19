@@ -53,12 +53,27 @@ class Zombie: SKSpriteNode {
     // 当前动画动作
     private var currentAnimationAction: SKAction?
 
+    init(texture: SKTexture, speed: CGFloat, health: Int, damage: Int, attackrate: Double) {
+        self._speed = speed
+        self.health = health
+        self.damage = damage
+        self.attackRate = attackrate
+        super.init(texture: texture, color: .clear, size: CGSize(width: 50, height: 50))
+
+        // 设置物理体
+        setupPhysicsBody()
+    }
+
+    // 兼容旧代码的初始化方法
     init(imageNamed name: String, speed: CGFloat, health: Int, damage: Int, attackrate: Double) {
         self._speed = speed
         self.health = health
         self.damage = damage
         self.attackRate = attackrate
-        super.init(texture: SKTexture(imageNamed: name), color: .clear, size: CGSize(width: 50, height: 50))
+
+        // 使用ResourceManager获取纹理
+        let texture = ResourceManager.shared.getTexture(named: name)
+        super.init(texture: texture, color: .clear, size: CGSize(width: 50, height: 50))
 
         // 设置物理体
         setupPhysicsBody()

@@ -63,11 +63,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // 根据关卡号选择背景图片（level1 -> level1，level2 -> level2，以此类推）
         print("当前关卡为\(currentLevel)")
 
+        let backgroundName = "level-\(currentLevel)"
 
-       let backgroundName = "level-\(currentLevel)"
+        // 使用ResourceManager获取纹理
+        let texture = ResourceManager.shared.getTexture(named: backgroundName)
 
         // 创建背景精灵节点
-        backgroundNode = SKSpriteNode(imageNamed: backgroundName)
+        backgroundNode = SKSpriteNode(texture: texture)
 
         if let backgroundNode = backgroundNode {
             // 设置背景位置为屏幕中心
@@ -78,13 +80,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
             // 将背景添加到场景
             addChild(backgroundNode)
-
-
         } else {
-            print("未能加载背景图片：(backgroundName)")
+            print("未能加载背景图片：\(backgroundName)")
             // 如果指定的关卡背景不存在，则使用默认背景
             backgroundColor = SKColor.darkGray
-
         }
     }
 

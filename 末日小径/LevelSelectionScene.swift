@@ -31,8 +31,11 @@ class LevelSelectionScene: SKScene {
 
     // 设置背景
     private func setupBackground() {
-        // 创建背景精灵节点，使用"level-choose"图片（需要添加到Assets.xcassets中）
-        backgroundNode = SKSpriteNode(imageNamed: "level-choose")
+        // 使用ResourceManager获取纹理
+        let texture = ResourceManager.shared.getTexture(named: "level-choose")
+
+        // 创建背景精灵节点
+        backgroundNode = SKSpriteNode(texture: texture)
 
         if let backgroundNode = backgroundNode {
             // 设置背景位置为屏幕中心
@@ -199,35 +202,19 @@ class LevelSelectionScene: SKScene {
 
     // 预加载关卡资源
     private func preloadLevelResources(forLevel level: Int, completion: @escaping (Bool) -> Void) {
-        // 清空之前预加载的纹理
-        preloadedTextures.removeAll()
-
-        // 需要预加载的纹理名称
-        var textureNames: [String] = []
-
-        // 添加关卡背景
-        textureNames.append("level-\(level)")
-
-        // 添加僵尸纹理
-        for i in 1...7 {
-            textureNames.append("walker_move_\(i)")
-        }
-
-        // 添加炮塔纹理
-        textureNames.append("rifle_idle")
-        for i in 1...3 {
-            textureNames.append("rifle_shoot_\(i)")
-        }
-        textureNames.append("shotgun_idle")
-        // 创建纹理数组
-        let textures = textureNames.map { SKTexture(imageNamed: $0) }
-        preloadedTextures = textures
-
-        // 预加载所有纹理
-        SKTexture.preload(textures) {
-            // 在主线程上调用完成回调
-            DispatchQueue.main.async {
-                completion(true)
+        // 使用ResourceManager预加载所有资源
+        ResourceManager.shared.preloadAllResources { success in
+            if success {
+                print("ResourceManager成功预加载所有资源")
+                // 在主线程上调用完成回调
+                DispatchQueue.main.async {
+                    completion(true)
+                }
+            } else {
+                print("ResourceManager预加载资源失败")
+                DispatchQueue.main.async {
+                    completion(false)
+                }
             }
         }
     }
