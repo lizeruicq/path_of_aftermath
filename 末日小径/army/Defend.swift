@@ -69,6 +69,9 @@ class Defend: SKSpriteNode {
         // 设置名称
         self.name = "tower_\(name)"
 
+        // 设置zPosition确保炮塔显示在正确的层级（低于僵尸）
+        self.zPosition = 50
+
         // 设置物理体
         setupPhysicsBody()
     }
@@ -88,6 +91,9 @@ class Defend: SKSpriteNode {
 
         // 设置名称
         self.name = "tower_\(name)"
+
+        // 设置zPosition确保炮塔显示在正确的层级（低于僵尸）
+        self.zPosition = 50
 
         // 设置物理体
         setupPhysicsBody()
@@ -161,7 +167,7 @@ class Defend: SKSpriteNode {
         // 计算炮塔所在的列
         let towerColumn = Int(towerX / columnWidth)
 
-        print("炮塔场景坐标X=\(towerX)，所在列=\(towerColumn)")
+
 
         // 从GameManager获取活着的僵尸数组
         let zombies = GameManager.shared.activeZombies
@@ -179,7 +185,6 @@ class Defend: SKSpriteNode {
             // 计算僵尸所在的列
             let zombieColumn = Int(zombieX / columnWidth)
 
-            print("僵尸坐标X=\(zombieX)，所在列=\(zombieColumn)")
 
             // 检查僵尸和炮塔是否在同一列
             if zombieColumn != towerColumn {
@@ -193,7 +198,7 @@ class Defend: SKSpriteNode {
             if distance <= self.attackRange && distance < closestDistance {
                 closestZombie = zombie
                 closestDistance = distance
-                print("找到目标僵尸，距离=\(distance)，在攻击范围\(self.attackRange)内")
+
             }
         }
 
@@ -201,9 +206,9 @@ class Defend: SKSpriteNode {
         if let target = closestZombie {
             currentTarget = target
             changeState(to: .attacking)
-            print("炮塔找到目标：列 \(towerColumn)")
+
         } else {
-            print("未找到目标僵尸")
+
         }
     }
 
@@ -220,8 +225,7 @@ class Defend: SKSpriteNode {
         let dx = targetPositionInScene.x - selfPositionInScene.x
         let dy = targetPositionInScene.y - selfPositionInScene.y
 
-        // 打印调试信息
-        print("炮塔场景坐标=\(selfPositionInScene)，僵尸坐标=\(targetPositionInScene)，距离=\(sqrt(dx*dx + dy*dy))")
+
 
         // 返回欧几里得距离（直线距离）
         return sqrt(dx * dx + dy * dy)
@@ -240,13 +244,26 @@ class Defend: SKSpriteNode {
 
     // 被摧毁
     func destroy() {
+        print("炮塔\(towerName)被摧毁")
         changeState(to: .destroyed)
 
-        // 创建摧毁效果（可以在子类中重写以添加特定效果）
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-        let remove = SKAction.removeFromParent()
+        // 禁用物理碰撞，防止摧毁后仍然与僵尸碰撞
+        self.physicsBody?.categoryBitMask = 0
+        self.physicsBody?.contactTestBitMask = 0
+        self.physicsBody?.collisionBitMask = 0
 
-        self.run(SKAction.sequence([fadeOut, remove]))
+        // 通知父节点（GridCell）炮塔被摧毁
+        if let gridCell = self.parent as? GridCell {
+            print("通知GridCell炮塔被摧毁，恢复格子为可建造状态")
+            gridCell.removeTower()
+        } else {
+            // 如果不在GridCell中，直接移除
+            print("炮塔不在GridCell中，直接移除")
+            // 创建摧毁效果（可以在子类中重写以添加特定效果）
+            let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+            let remove = SKAction.removeFromParent()
+            self.run(SKAction.sequence([fadeOut, remove]))
+        }
     }
 
     // 改变状态

@@ -32,6 +32,11 @@ class GridCell: SKNode {
         return tower != nil
     }
 
+    // 获取当前炮塔（只读）
+    var currentTower: Defend? {
+        return tower
+    }
+
     // 单元格大小
     private var cellSize: CGSize
 
@@ -45,6 +50,9 @@ class GridCell: SKNode {
 
         // 设置名称，用于识别
         self.name = "cell_\(row)_\(column)"
+
+        // 设置zPosition确保网格显示在正确的层级（低于炮塔）
+        self.zPosition = 20
 
         // 确保节点可以接收触摸事件
         self.isUserInteractionEnabled = false  // 改为false，让触摸事件传递到父节点
@@ -104,6 +112,7 @@ class GridCell: SKNode {
         )
         square.lineWidth = 0 // 不显示边框
         square.name = "inner_square"
+        square.zPosition = 0  // 确保在网格节点内部的最底层
 
         // 设置填充颜色（确保可见）
         square.fillColor = SKColor.green.withAlphaComponent(0.3)
@@ -123,15 +132,18 @@ class GridCell: SKNode {
             if hasTower {
                 // 已有炮塔 - 浅灰色透明
                 innerSquare?.fillColor = SKColor.gray.withAlphaComponent(0.2)
+                print("格子(\(row),\(column))更新外观: 灰色 (有炮塔)")
             } else {
                 // 可建造且无炮塔 - 浅绿色透明
                 innerSquare?.fillColor = SKColor.green.withAlphaComponent(0.3)
+                print("格子(\(row),\(column))更新外观: 绿色 (可建造，无炮塔)")
             }
             // 显示单元格
             isHidden = false
         } else {
             // 不可建造 - 完全隐藏单元格
             isHidden = true
+            print("格子(\(row),\(column))更新外观: 隐藏 (不可建造)")
         }
     }
 
@@ -191,11 +203,22 @@ class GridCell: SKNode {
     func removeTower() {
         // 如果有炮塔，移除它
         if let tower = tower {
-            tower.removeFromParent()
+            print("GridCell移除炮塔: \(tower.name ?? "未知炮塔")")
+
+            // 创建摧毁效果
+            let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+            let remove = SKAction.removeFromParent()
+
+            // 先清除引用，再播放摧毁动画
             self.tower = nil
 
-            // 更新外观
+            // 立即更新外观，恢复绿色显示
             updateAppearance()
+
+            // 播放摧毁动画
+            tower.run(SKAction.sequence([fadeOut, remove]))
+
+            print("格子已恢复为可建造状态，显示绿色")
         }
     }
 

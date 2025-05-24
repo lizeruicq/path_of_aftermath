@@ -13,9 +13,17 @@ class Walker: Zombie {
     }
 
     init() {
+        // 从配置中获取Walker的属性
+        let config = zombieConfigs[ZombieType.walker.rawValue] ?? [:]
+        let health = config["health"] as? Int ?? 30
+        let speed = config["speed"] as? CGFloat ?? 30
+        let damage = config["damage"] as? Int ?? 10
+        let attackRate = config["attackRate"] as? Double ?? 1.0
+        let rewardMoney = config["rewardMoney"] as? Int ?? 10
+
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "walker_move_1")
-        super.init(texture: texture, speed: 30, health: 30, damage: 10, attackrate: 1)
+        super.init(texture: texture, speed: speed, health: health, damage: damage, attackrate: attackRate, rewardMoney: rewardMoney)
 
         // 设置各种状态的动画
         setupAnimations()
@@ -90,23 +98,11 @@ class Walker: Zombie {
         // 创建攻击动画（更快的帧率）
         let animation = SKAction.animate(with: frames, timePerFrame: 0.08)
 
-        // 创建重复动作（攻击动作重复3次）
-        let repeatAction = SKAction.repeat(animation, count: 3)
-
-        // 攻击完成后恢复移动状态
-        let resumeMovingAction = SKAction.run { [weak self] in
-            guard let self = self else { return }
-            // 如果僵尸还活着，恢复移动状态
-            if self.currentState != .dying {
-                self.changeState(to: .moving)
-            }
-        }
-
-        // 完整的攻击动画序列
-        let attackSequence = SKAction.sequence([repeatAction, resumeMovingAction])
+        // 创建永久循环的攻击动画（持续攻击直到目标被摧毁）
+        let repeatForever = SKAction.repeatForever(animation)
 
         // 保存攻击动画
-        attackAnimation = attackSequence
+        attackAnimation = repeatForever
     }
 
     // 设置死亡动画

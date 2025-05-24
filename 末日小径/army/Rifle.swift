@@ -9,7 +9,7 @@ import SpriteKit
 
 class Rifle: Defend {
     // 子弹速度
-    private let bulletSpeed: CGFloat = 300.0
+    private let bulletSpeed: CGFloat = 1500.0
 
     // 子弹大小
     private let bulletSize = CGSize(width: 8, height: 3)
@@ -43,12 +43,6 @@ class Rifle: Defend {
 
     // 攻击目标
     override func attackTarget(_ target: Zombie) {
-
-        // 确保目标仍然有效
-        guard target.parent != nil && target.currentState != .dying else {
-            return
-        }
-
         // 播放射击动画
         playShootAnimation()
 
@@ -56,50 +50,91 @@ class Rifle: Defend {
         let bullet = SKShapeNode(rectOf: bulletSize)
         bullet.fillColor = bulletColor
         bullet.strokeColor = bulletColor
-        bullet.zPosition = 5
+        bullet.zPosition = 150  // 设置子弹的zPosition高于僵尸，确保可见
         bullet.name = "bullet"
 
         // 设置子弹垂直向上（-90度，即π/2弧度）
         bullet.zRotation = -CGFloat.pi / 2
 
         // 获取场景和父节点
-        if let scene = self.scene, let parent = self.parent {
-            // 将炮塔位置转换到场景坐标系
-            let towerPositionInScene = parent.convert(self.position, to: scene)
+        guard let scene = self.scene, let parent = self.parent else { return }
 
-            // 设置子弹初始位置在炮塔上方一点（Y坐标增加20）
-            bullet.position = CGPoint(x: towerPositionInScene.x, y: towerPositionInScene.y + 20)
-            scene.addChild(bullet)
-        }
+        // 将炮塔位置转换到场景坐标系
+        let towerPositionInScene = parent.convert(self.position, to: scene)
 
+        // 设置子弹初始位置在炮塔上方一点（Y坐标增加20）
+        bullet.position = CGPoint(x: towerPositionInScene.x + 13, y: towerPositionInScene.y + 20)
+
+        // 添加子弹到场景
+        scene.addChild(bullet)
+
+        // 计算子弹飞行距离和时间
         let distance = self.attackRange
         let duration = TimeInterval(distance / bulletSpeed)
 
+        // 计算目标位置（直线向上）
+        let targetY = towerPositionInScene.y + distance
+        let targetPosition = CGPoint(x: towerPositionInScene.x, y: targetY)
+
         // 创建子弹移动动作
-        let moveAction = SKAction.move(to: target.position, duration: duration)
+        let moveAction = SKAction.move(to: targetPosition, duration: duration)
 
-        // 创建子弹命中动作
-        let hitAction = SKAction.run { [weak self, weak target] in
-            guard let self = self, let target = target, target.parent != nil else {
-                bullet.removeFromParent()
-                return
-            }
-
-            // 对目标造成伤害
-            GameManager.shared.zombieTakeDamage(target, amount: self.attackPower)
-
-            // 创建命中效果
-            self.createHitEffect(at: bullet.position)
-
-            // 移除子弹
-            bullet.removeFromParent()
-        }
-
-        // 创建子弹移除动作（如果子弹没有命中目标）
+        // 创建子弹移除动作
         let removeAction = SKAction.removeFromParent()
 
+        // 创建子弹更新动作，用于检测碰撞
+        let updateAction = SKAction.customAction(withDuration: duration) { [weak self] (node, elapsedTime) in
+            guard let bullet = node as? SKShapeNode,
+                  let self = self,
+                  let scene = bullet.scene else { return }
+
+            // 获取所有活着的僵尸
+            let zombies = GameManager.shared.activeZombies
+
+            // 检查是否与任何僵尸碰撞
+            for zombie in zombies {
+                // 跳过已死亡的僵尸
+                if zombie.currentState == .dying || zombie.parent == nil || zombie.health <= 0 {
+                    continue
+                }
+
+                // 计算子弹和僵尸之间的距离
+                let bulletRect = CGRect(x: bullet.position.x - self.bulletSize.width/2,
+                                       y: bullet.position.y - self.bulletSize.height/2,
+                                       width: self.bulletSize.width,
+                                       height: self.bulletSize.height)
+
+                let zombieRect = CGRect(x: zombie.position.x - zombie.size.width/2,
+                                       y: zombie.position.y - zombie.size.height/2,
+                                       width: zombie.size.width,
+                                       height: zombie.size.height)
+
+                // 如果碰撞
+                if bulletRect.intersects(zombieRect) {
+                    // 对僵尸造成伤害
+                    GameManager.shared.zombieTakeDamage(zombie, amount: self.attackPower)
+
+                    // 创建命中效果
+                    self.createHitEffect(at: zombie.position)
+
+                    // 移除子弹
+                    bullet.removeAllActions()
+                    bullet.removeFromParent()
+                    return
+                }
+            }
+        }
+
+        // 组合动作：移动 + 持续检查碰撞
+        let moveWithCheckAction = SKAction.group([
+            moveAction,
+            SKAction.repeat(updateAction, count: Int(duration * 60)) // 假设60fps
+        ])
+        
+        
+
         // 运行子弹动作序列
-        bullet.run(SKAction.sequence([moveAction, hitAction, removeAction]))
+        bullet.run(SKAction.sequence([moveWithCheckAction, removeAction]))
     }
 
     // 创建命中效果
@@ -108,7 +143,7 @@ class Rifle: Defend {
         let hitEffect = SKEmitterNode()
 
         // 配置粒子系统
-//        hitEffect.particleTexture = SKTexture(imageNamed: "spark") // 使用火花图片
+       hitEffect.particleTexture = SKTexture(imageNamed: "spark") // 使用火花图片
         hitEffect.particleBirthRate = 20
         hitEffect.numParticlesToEmit = 10
         hitEffect.particleLifetime = 0.2
@@ -129,7 +164,7 @@ class Rifle: Defend {
 
         // 设置位置
         hitEffect.position = position
-        hitEffect.zPosition = 6
+        hitEffect.zPosition = 160  // 设置命中效果的zPosition高于子弹，确保可见
 
         // 添加到场景
         self.scene?.addChild(hitEffect)

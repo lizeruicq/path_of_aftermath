@@ -81,23 +81,11 @@ class Runner: Zombie {
         // 创建攻击动画（更快的帧率）
         let animation = SKAction.animate(with: frames, timePerFrame: 0.05) // Runner攻击更快
 
-        // 创建重复动作（攻击动作重复4次）
-        let repeatAction = SKAction.repeat(animation, count: 4)
-
-        // 攻击完成后恢复移动状态
-        let resumeMovingAction = SKAction.run { [weak self] in
-            guard let self = self else { return }
-            // 如果僵尸还活着，恢复移动状态
-            if self.currentState != .dying {
-                self.changeState(to: .moving)
-            }
-        }
-
-        // 完整的攻击动画序列
-        let attackSequence = SKAction.sequence([repeatAction, resumeMovingAction])
+        // 创建永久循环的攻击动画（持续攻击直到目标被摧毁）
+        let repeatForever = SKAction.repeatForever(animation)
 
         // 保存攻击动画
-        attackAnimation = attackSequence
+        attackAnimation = repeatForever
     }
 
     // 设置死亡动画

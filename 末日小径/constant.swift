@@ -14,6 +14,35 @@ enum ZombieType: String {
 //    case tank = "tank"
 }
 
+// 僵尸配置数据
+let zombieConfigs: [String: [String: Any]] = [
+    ZombieType.walker.rawValue: [
+        "name": "行走者",
+        "health": 30,
+        "speed": 30,
+        "damage": 10,
+        "attackRate": 1.0,
+        "rewardMoney": 50  // 击杀奖励金币
+    ]
+    // 未来可以添加更多僵尸类型的配置
+    // "runner": [
+    //     "name": "奔跑者",
+    //     "health": 5,
+    //     "speed": 20,
+    //     "damage": 5,
+    //     "attackRate": 1.0,
+    //     "rewardMoney": 15
+    // ],
+    // "tank": [
+    //     "name": "坦克",
+    //     "health": 100,
+    //     "speed": 5,
+    //     "damage": 15,
+    //     "attackRate": 1.0,
+    //     "rewardMoney": 25
+    // ]
+]
+
 // 炮塔类型枚举
 enum TowerType: String {
     case rifle = "rifle"       // 步枪
@@ -34,7 +63,7 @@ let towerConfigs: [String: [String: Any]] = [
         "price": 100,
         "attackRange": 300.0
     ],
-    
+
     TowerType.shotgun.rawValue: [
         "name": "霰弹枪手",
         "image": "shotgun_idle",
@@ -44,7 +73,7 @@ let towerConfigs: [String: [String: Any]] = [
         "price": 150,
         "attackRange": 300.0
     ],
-    
+
 //    TowerType.machineGun.rawValue: [
 //        "name": "机关枪",
 //        "image": "machinegun_tower",
@@ -78,30 +107,32 @@ let towerConfigs: [String: [String: Any]] = [
 let levelConfigs: [[String: Any]] = [
     [ // 第一关配置
         "level": 1,
+        "initialFunds": 500, // 初始金币
         "waves": [
             [ // walker僵尸
                     "enemyType": ZombieType.walker.rawValue,
-                    "count": 5
+                    "count": 20
             ],
             [ // walker僵尸
                     "enemyType": ZombieType.walker.rawValue,
-                    "count": 10
+                    "count": 30
             ]
         ],
         "availableTowers": [
             TowerType.rifle.rawValue
-            
+
         ]
     ],
     [ // 第二关配置
         "level": 2,
+        "initialFunds": 700, // 初始金币
         "waves": [
             [ // 第一波敌人
                 [ // walker僵尸
                     "enemyType": ZombieType.walker.rawValue,
                     "count": 3
                 ],
-                
+
             ]
         ],
         "availableTowers": [
