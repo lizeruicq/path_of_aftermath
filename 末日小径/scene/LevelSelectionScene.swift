@@ -13,9 +13,12 @@ class LevelSelectionScene: SKScene {
     // 背景图片节点
     private var backgroundNode: SKSpriteNode?
 
-    // 关卡按钮
-    private var levelButtons: [SKSpriteNode] = []
-    private var levelButtonLabels: [SKLabelNode] = []
+    // 关卡选择面板
+    private var levelSelectionPanel: LevelSelectionPanel?
+
+    // 返回按钮
+    private var backButton: SKSpriteNode?
+    private var backButtonLabel: SKLabelNode?
 
     // 加载指示器
     private var loadingIndicator: SKNode?
@@ -26,7 +29,8 @@ class LevelSelectionScene: SKScene {
 
     override func didMove(to view: SKView) {
         setupBackground()
-        setupLevelButtons()
+        setupLevelSelectionPanel()
+        setupBackButton()
     }
 
     // 设置背景
@@ -49,55 +53,55 @@ class LevelSelectionScene: SKScene {
         }
     }
 
-    // 设置关卡按钮
-    private func setupLevelButtons() {
-        // 关卡名称数组
-        let levelNames = ["关卡1", "关卡2", "关卡3","关卡4"]
+    // 设置关卡选择面板
+    private func setupLevelSelectionPanel() {
+        // 创建关卡选择面板
+        levelSelectionPanel = LevelSelectionPanel(size: size)
+        levelSelectionPanel?.delegate = self
+        levelSelectionPanel?.zPosition = 10
 
-        // 按钮样式参数
-        let buttonSize = CGSize(width: 150, height: 50)
-        let buttonColor = SKColor.darkGray.withAlphaComponent(0.7)
-        let fontName = "Helvetica"
-        let fontSize: CGFloat = 20
-        let fontColor = SKColor.white
+//        // 调试：解锁前几关用于测试
+//        LevelProgressManager.shared.unlockFirstFewLevels()
 
-        // 计算按钮总高度和间距
-        let totalButtonsHeight: CGFloat = CGFloat(levelNames.count) * buttonSize.height
-        let spacing: CGFloat = 40
-        let totalHeight = totalButtonsHeight + spacing * CGFloat(levelNames.count - 1)
+        addChild(levelSelectionPanel!)
+    }
 
-        // 计算起始Y坐标
-        let startY = (self.size.height + totalHeight) / 2 - buttonSize.height / 2
+    // 设置返回按钮
+    private func setupBackButton() {
+        // 按钮尺寸和位置
+        let buttonWidth: CGFloat = 120
+        let buttonHeight: CGFloat = 50
+        let buttonY: CGFloat = 60
 
-        for (index, levelName) in levelNames.enumerated() {
-            // 创建按钮节点
-            let button = SKSpriteNode(color: buttonColor, size: buttonSize)
-            button.name = "level(\(index) + 1)Button"
-            button.zPosition = 10
+        // 创建返回按钮背景
+        backButton = SKSpriteNode(color: SKColor.red.withAlphaComponent(0.8), size: CGSize(width: buttonWidth, height: buttonHeight))
+        backButton?.position = CGPoint(x: size.width / 2, y: buttonY)
+        backButton?.name = "backButton"
+        backButton?.zPosition = 20
 
-            // 计算按钮位置
-            let yPosition = startY - CGFloat(index) * (buttonSize.height + spacing)
-            button.position = CGPoint(x: self.size.width / 2, y: yPosition)
+        // 添加圆角效果
+        let cornerRadius: CGFloat = 10
+        let roundedBackButton = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: cornerRadius)
+        roundedBackButton.fillColor = SKColor.red.withAlphaComponent(0.8)
+        roundedBackButton.strokeColor = SKColor.white
+        roundedBackButton.lineWidth = 2
+        roundedBackButton.position = CGPoint(x: size.width / 2, y: buttonY)
+        roundedBackButton.name = "backButton"
+        roundedBackButton.zPosition = 20
 
-            // 创建按钮标签
-            let label = SKLabelNode(fontNamed: fontName)
-            label.text = levelName
-            label.fontSize = fontSize
-            label.fontColor = fontColor
-            label.verticalAlignmentMode = .center
-            label.horizontalAlignmentMode = .center
-            label.position = CGPoint.zero
+        // 创建返回按钮标签
+        backButtonLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
+        backButtonLabel?.text = "返回主菜单"
+        backButtonLabel?.fontSize = 18
+        backButtonLabel?.fontColor = SKColor.white
+        backButtonLabel?.position = CGPoint(x: 0, y: 0)
+        backButtonLabel?.verticalAlignmentMode = .center
+        backButtonLabel?.horizontalAlignmentMode = .center
+        backButtonLabel?.zPosition = 21
 
-            // 添加标签到按钮
-            button.addChild(label)
-
-            // 添加按钮到场景
-            addChild(button)
-
-            // 保存按钮和标签引用
-            levelButtons.append(button)
-            levelButtonLabels.append(label)
-        }
+        // 添加到场景
+        addChild(roundedBackButton)
+        roundedBackButton.addChild(backButtonLabel!)
     }
 
     // 创建加载指示器
@@ -243,7 +247,7 @@ class LevelSelectionScene: SKScene {
         errorLabel.run(SKAction.sequence([fadeIn, wait, fadeOut, remove]))
     }
 
-    // 处理触摸事件
+    // 处理触摸开始事件
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // 如果正在加载，忽略触摸事件
         if loadingIndicator != nil && !loadingIndicator!.isHidden {
@@ -255,36 +259,90 @@ class LevelSelectionScene: SKScene {
         let touchedNodes = nodes(at: location)
 
         for node in touchedNodes {
-            // 检查是否点击了关卡按钮
-            if let buttonNode = node as? SKSpriteNode, levelButtons.contains(buttonNode) {
-                // 获取按钮索引
-                if let index = levelButtons.firstIndex(of: buttonNode) {
-                    // 打印调试信息（修正变量引用）
-                    print("选择了关卡\(index + 1)")
-
-                    // 验证索引有效性
-                    guard index >= 0 && index < levelButtons.count else {
-                        print("无效的关卡索引: \(index)")
-                        return
-                    }
-                    // // 1. 先尝试用 fileNamed: 加载，并向下转型到 GameScene
-                    // if let gameScene = SKScene(fileNamed: "GameScene") as? GameScene {
-                    //     // 2. 现在 gameScene 是非可选的 GameScene 可以安全使用
-                    //     gameScene.scaleMode = .aspectFill
-                    //     gameScene.configureLevel(level: index + 1)
-
-                    //     // 3. 创建过渡动画并呈现
-                    //     let transition = SKTransition.fade(withDuration: 1.0)
-                    //     self.view?.presentScene(gameScene, transition: transition)
-                    // } else {
-                    //     // 加载失败时的容错处理
-                    //     print("⚠️ 无法加载 GameScene.sks 或类型转换失败")
-                    // }
-
-                    // 开始加载游戏场景
-                    startLoadingGameScene(forLevel: index + 1)
-                }
+            // 检查是否点击了返回按钮
+            if node.name == "backButton" {
+                returnToMainMenu()
+                return
             }
         }
+
+        // 将触摸开始事件传递给关卡选择面板
+        if let panel = levelSelectionPanel {
+            let panelLocation = touch.location(in: panel)
+            panel.handleTouchBegan(at: panelLocation)
+        }
+    }
+
+    // 处理触摸移动事件
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // 如果正在加载，忽略触摸事件
+        if loadingIndicator != nil && !loadingIndicator!.isHidden {
+            return
+        }
+
+        guard let touch = touches.first else { return }
+
+        // 将触摸移动事件传递给关卡选择面板
+        if let panel = levelSelectionPanel {
+            let panelLocation = touch.location(in: panel)
+            panel.handleTouchMoved(to: panelLocation)
+        }
+    }
+
+    // 处理触摸结束事件
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // 如果正在加载，忽略触摸事件
+        if loadingIndicator != nil && !loadingIndicator!.isHidden {
+            return
+        }
+
+        guard let touch = touches.first else { return }
+
+        // 将触摸结束事件传递给关卡选择面板
+        if let panel = levelSelectionPanel {
+            let panelLocation = touch.location(in: panel)
+            panel.handleTouchEnded(at: panelLocation)
+        }
+    }
+
+    // 处理触摸取消事件
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // 将取消事件当作结束事件处理
+        touchesEnded(touches, with: event)
+    }
+
+    // 返回主菜单
+    private func returnToMainMenu() {
+        print("返回主菜单")
+
+        // 创建主菜单场景
+        let mainMenuScene = MainMenuScene(size: size)
+        mainMenuScene.scaleMode = .aspectFill
+
+        // 场景切换动画
+        let transition = SKTransition.fade(withDuration: 1.0)
+
+        // 切换到主菜单场景
+        view?.presentScene(mainMenuScene, transition: transition)
+    }
+
+    // 刷新关卡按钮状态
+    func refreshLevelButtons() {
+        levelSelectionPanel?.refreshLevelButtons()
+    }
+}
+
+// MARK: - LevelSelectionPanelDelegate
+extension LevelSelectionScene: LevelSelectionPanelDelegate {
+
+    // 关卡选择面板选择了关卡
+    func levelSelectionPanel(_ panel: LevelSelectionPanel, didSelectLevel levelId: Int) {
+        print("场景接收到关卡选择: \(levelId)")
+        startLoadingGameScene(forLevel: levelId)
+    }
+
+    // 关卡选择面板请求显示错误消息
+    func levelSelectionPanelDidRequestShowError(_ panel: LevelSelectionPanel, message: String) {
+        showErrorMessage(message)
     }
 }

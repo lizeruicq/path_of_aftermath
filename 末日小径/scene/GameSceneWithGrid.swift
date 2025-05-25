@@ -8,7 +8,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, PausePanelDelegate {
+class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, PausePanelDelegate, GameEndPanelDelegate {
 
     // 网格尺寸
     let gridRows: Int = 19
@@ -106,6 +106,9 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
     private var pauseButton: SKSpriteNode!
     private var pausePanel: PausePanel!
 
+    // 游戏结束面板
+    internal var gameEndPanel: GameEndPanel!
+
     override func didMove(to view: SKView) {
         // 确保场景可以接收触摸事件
         self.isUserInteractionEnabled = true
@@ -155,6 +158,9 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         // 创建暂停面板
         setupPausePanel()
+
+        // 创建游戏结束面板
+        setupGameEndPanel()
     }
 
     // 设置金币显示UI
@@ -279,6 +285,29 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         addChild(pausePanel)
 
         print("暂停面板已创建")
+    }
+
+    // 设置游戏结束面板
+    private func setupGameEndPanel() {
+        gameEndPanel = GameEndPanel(sceneSize: size)
+        gameEndPanel.delegate = self
+        gameEndPanel.zPosition = 5000  // 确保在暂停面板之上
+        addChild(gameEndPanel)
+
+        print("游戏结束面板已创建")
+    }
+
+    // 测试方法：显示游戏结束面板
+    private func testGameEndPanel() {
+        // 测试胜利面板
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.gameEndPanel.show(endType: .victory)
+        }
+
+        // 测试失败面板
+        // DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+        //     self?.gameEndPanel.show(endType: .defeat)
+        // }
     }
 
     // 设置背景
@@ -452,7 +481,13 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         print("处理单元格点击: 位置=\(sceneLocation)")
 
-        // 首先检查是否点击了暂停面板
+        // 首先检查是否点击了游戏结束面板
+        if gameEndPanel.isShowing {
+            gameEndPanel.handleTouch(at: sceneLocation)
+            return // 游戏结束面板处理了点击事件
+        }
+
+        // 检查是否点击了暂停面板
         if pausePanel.isShowing {
             if pausePanel.handleTouch(at: sceneLocation) {
                 return // 暂停面板处理了点击事件
@@ -825,12 +860,63 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         let levelSelectionScene = LevelSelectionScene(size: self.size)
         levelSelectionScene.scaleMode = .aspectFill
 
+        // 刷新关卡按钮状态以反映最新的解锁进度
+        levelSelectionScene.refreshLevelButtons()
+
         // 场景切换动画
         let transition = SKTransition.fade(withDuration: 1.0)
 
         // 切换到关卡选择场景
         if let view = self.view {
             view.presentScene(levelSelectionScene, transition: transition)
+        }
+    }
+
+    // MARK: - GameEndPanelDelegate
+
+    // 游戏结束面板请求返回
+    func gameEndPanelDidRequestReturn(_ panel: GameEndPanel) {
+        print("游戏结束面板请求返回关卡选择")
+
+        // 隐藏游戏结束面板
+        panel.hide()
+
+        // 返回关卡选择场景
+        let levelSelectionScene = LevelSelectionScene(size: self.size)
+        levelSelectionScene.scaleMode = .aspectFill
+
+        // 刷新关卡按钮状态以反映最新的解锁进度
+        levelSelectionScene.refreshLevelButtons()
+
+        // 场景切换动画
+        let transition = SKTransition.fade(withDuration: 1.0)
+
+        // 切换到关卡选择场景
+        if let view = self.view {
+            view.presentScene(levelSelectionScene, transition: transition)
+        }
+    }
+
+    // 游戏结束面板请求重新开始
+    func gameEndPanelDidRequestRestart(_ panel: GameEndPanel) {
+        print("游戏结束面板请求重新开始游戏")
+
+        // 隐藏游戏结束面板
+        panel.hide()
+
+        // 重新创建游戏场景
+        let newGameScene = GameSceneWithGrid(size: self.size)
+        newGameScene.scaleMode = .aspectFill
+
+        // 配置相同的关卡
+        newGameScene.configureLevel(level: currentLevel)
+
+        // 场景切换动画
+        let transition = SKTransition.fade(withDuration: 1.0)
+
+        // 切换到新的游戏场景
+        if let view = self.view {
+            view.presentScene(newGameScene, transition: transition)
         }
     }
 }

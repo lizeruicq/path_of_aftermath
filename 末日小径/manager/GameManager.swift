@@ -330,7 +330,7 @@ class GameManager {
     func removeZombie(_ zombie: Zombie) {
         // 检查僵尸是否突破了防线（到达屏幕底部且还活着）
         if zombie.currentState != .dying && zombie.position.y <= -zombie.size.height {
-            
+
             // 设置游戏状态为结束
             gameState = .gameOver
             // 僵尸突破防线，游戏失败
@@ -460,58 +460,41 @@ class GameManager {
 
     // 处理游戏失败（僵尸突破防线）
     private func handleGameDefeat() {
-        // 显示失败覆盖层
-        showGameOverlay(false)
-
+        // 显示游戏结束面板（失败）
+        showGameEndPanel(isVictory: false)
 
         // 停止场景更新
         gameScene?.isPaused = true
 
         // 打印失败结果
         print("💀 游戏失败！僵尸突破了最后的防线！")
-
-        
     }
 
     // 处理游戏胜利（所有波次完成）
     private func handleGameVictory() {
-        
-        showGameOverlay(true)
+        // 显示游戏结束面板（胜利）
+        showGameEndPanel(isVictory: true)
 
         // 停止场景更新
         gameScene?.isPaused = true
 
+        // 解锁下一关卡
+        LevelProgressManager.shared.completeLevel(currentLevel)
+
         // 打印胜利结果
         print("🎉 游戏胜利！成功击退了所有僵尸！")
-
     }
 
-    // 显示失败覆盖层
-    private func showGameOverlay(_ isVictory : Bool) {
-        guard let scene = gameScene else { return }
+    // 显示游戏结束面板
+    private func showGameEndPanel(isVictory: Bool) {
+        guard let scene = gameScene as? GameSceneWithGrid else {
+            print("错误：场景不是 GameSceneWithGrid 类型")
+            return
+        }
 
-        // 创建灰色蒙版
-        let overlay = SKSpriteNode(color: SKColor.gray.withAlphaComponent(0.7), size: scene.size)
-        overlay.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
-        overlay.zPosition = 3000
-        overlay.name = "endOverlay"
-
-        // 创建副标题
-        
-        let subtitleLabel = SKLabelNode(fontNamed: "Helvetica")
-        if isVictory == false
-        {subtitleLabel.text = "僵尸突破了防线，任务失败"}
-        else
-        {subtitleLabel.text = "已暂时清除危险，任务完成"}
-        subtitleLabel.fontSize = 24
-        subtitleLabel.fontColor = SKColor.white
-        subtitleLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2 - 20)
-        subtitleLabel.zPosition = 3001
-
-        // 添加到场景
-        scene.addChild(overlay)
-        scene.addChild(subtitleLabel)
-
+        // 显示游戏结束面板
+        let endType: GameEndType = isVictory ? .victory : .defeat
+        scene.gameEndPanel.show(endType: endType)
     }
 
 }
