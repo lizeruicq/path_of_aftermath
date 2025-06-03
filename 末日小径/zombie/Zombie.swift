@@ -73,7 +73,8 @@ class Zombie: SKSpriteNode {
         self.damage = damage
         self.attackRate = attackrate
         self.rewardMoney = rewardMoney
-        super.init(texture: texture, color: .clear, size: CGSize(width: 50, height: 50))
+//        super.init(texture: texture, color: .clear, size: CGSize(width: 50, height: 50))
+        super.init(texture: texture, color: .clear, size: texture.size())
 
         // 设置zPosition确保僵尸显示在正确的层级
         self.zPosition = 100

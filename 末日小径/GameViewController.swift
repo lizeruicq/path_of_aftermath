@@ -28,7 +28,7 @@ class GameViewController: UIViewController {
                     // 在主线程上创建并显示主菜单场景
                     DispatchQueue.main.async {
                         let mainMenuScene = MainMenuScene(size: view.bounds.size)
-                        mainMenuScene.scaleMode = .aspectFill
+                        mainMenuScene.scaleMode = .aspectFit
                         // 显示主菜单场景
                         view.presentScene(mainMenuScene)
                     }
@@ -38,7 +38,7 @@ class GameViewController: UIViewController {
                     // 即使预加载失败，也显示主菜单场景
                     DispatchQueue.main.async {
                         let mainMenuScene = MainMenuScene(size: view.bounds.size)
-                        mainMenuScene.scaleMode = .aspectFill
+                        mainMenuScene.scaleMode = .aspectFit
                         // 显示主菜单场景
                         view.presentScene(mainMenuScene)
                     }

@@ -175,7 +175,7 @@ class LevelSelectionScene: SKScene {
             if success {
                 // 创建游戏场景
                 let gameScene = GameSceneWithGrid(size: self.size)
-                gameScene.scaleMode = .aspectFill
+                gameScene.scaleMode = .aspectFit
 
                 // 配置对应关卡
                 gameScene.configureLevel(level: level)
@@ -317,7 +317,7 @@ class LevelSelectionScene: SKScene {
 
         // 创建主菜单场景
         let mainMenuScene = MainMenuScene(size: size)
-        mainMenuScene.scaleMode = .aspectFill
+        mainMenuScene.scaleMode = .aspectFit
 
         // 场景切换动画
         let transition = SKTransition.fade(withDuration: 1.0)

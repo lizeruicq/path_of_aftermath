@@ -76,7 +76,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             backgroundNode.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
 
             // 调整背景大小以填充整个屏幕
-            backgroundNode.size = self.size
+//            backgroundNode.size = self.size
+            
+            let scale = max(self.size.width / backgroundNode.size.width,
+                            self.size.height / backgroundNode.size.height)
+            backgroundNode.setScale(scale)
 
             // 设置zPosition确保背景在最底层
             backgroundNode.zPosition = 0

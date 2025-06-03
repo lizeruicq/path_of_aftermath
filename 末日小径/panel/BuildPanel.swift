@@ -119,7 +119,7 @@ class BuildPanel: SKNode {
     // 创建炮塔列表
     private func createTowerList() {
         // 设置列表参数
-        let itemSize: CGFloat = panelWidth * 0.7
+        let itemSize: CGFloat = panelWidth * 0.5
         let padding: CGFloat = (panelWidth - itemSize) / 2
         let startY = panelHeight - 60 - itemSize / 2
         let spacing: CGFloat = 20
@@ -164,13 +164,13 @@ class BuildPanel: SKNode {
             towerImage.zPosition = 1  // 图片在背景之上
             towerImage.name = "tower_image_\(towerType.rawValue)"
 
-            // 创建名称标签
-            let nameLabel = SKLabelNode(fontNamed: "Helvetica")
-            nameLabel.text = towerConfig["name"] as? String ?? "未知炮塔"
-            nameLabel.fontSize = 14
-            nameLabel.fontColor = SKColor.white
-            nameLabel.position = CGPoint(x: 0, y: -itemSize / 2 - 15)
-            nameLabel.zPosition = 2  // 名称在图片之上
+//            // 创建名称标签
+//            let nameLabel = SKLabelNode(fontNamed: "Helvetica")
+//            nameLabel.text = towerConfig["name"] as? String ?? "未知炮塔"
+//            nameLabel.fontSize = 14
+//            nameLabel.fontColor = SKColor.white
+//            nameLabel.position = CGPoint(x: 0, y: -itemSize / 2 - 15)
+//            nameLabel.zPosition = 2  // 名称在图片之上
 
             // 创建价格标签
             let priceLabel = SKLabelNode(fontNamed: "Helvetica")
@@ -178,7 +178,7 @@ class BuildPanel: SKNode {
             priceLabel.text = "价格: \(price)"
             priceLabel.fontSize = 12
             priceLabel.fontColor = SKColor.yellow
-            priceLabel.position = CGPoint(x: 0, y: -itemSize / 2 - 30)
+            priceLabel.position = CGPoint(x: 0, y: -itemSize / 2 - 10)
             priceLabel.zPosition = 2  // 价格在图片之上
             priceLabel.name = "price_label_\(towerType.rawValue)"
 
@@ -213,7 +213,7 @@ class BuildPanel: SKNode {
             // 添加到容器
             itemContainer.addChild(itemBackground)
             itemContainer.addChild(towerImage)
-            itemContainer.addChild(nameLabel)
+//            itemContainer.addChild(nameLabel)
             itemContainer.addChild(priceLabel)
             itemContainer.addChild(disabledOverlay)
 

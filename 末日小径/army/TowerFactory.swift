@@ -21,12 +21,15 @@ class TowerFactory {
             return Rifle()
         case .shotgun:
             return ShotGun()
-//        case .machineGun:
-//            return MachineGun()
-//        case .sniper:
-//            return Sniper()
-//        case .rocket:
-//            return Rocket()
+        case .supergun:
+            return Super()
+        case .chaingun:
+            return Chaingun()
+        case .knife:
+            return Knife()
+        case .cover:
+            return Cover()
+
         }
     }
     

@@ -858,7 +858,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         // 返回关卡选择场景
         let levelSelectionScene = LevelSelectionScene(size: self.size)
-        levelSelectionScene.scaleMode = .aspectFill
+        levelSelectionScene.scaleMode = .aspectFit
 
         // 刷新关卡按钮状态以反映最新的解锁进度
         levelSelectionScene.refreshLevelButtons()
@@ -883,7 +883,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         // 返回关卡选择场景
         let levelSelectionScene = LevelSelectionScene(size: self.size)
-        levelSelectionScene.scaleMode = .aspectFill
+        levelSelectionScene.scaleMode = .aspectFit
 
         // 刷新关卡按钮状态以反映最新的解锁进度
         levelSelectionScene.refreshLevelButtons()
@@ -906,7 +906,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         // 重新创建游戏场景
         let newGameScene = GameSceneWithGrid(size: self.size)
-        newGameScene.scaleMode = .aspectFill
+        newGameScene.scaleMode = .aspectFit
 
         // 配置相同的关卡
         newGameScene.configureLevel(level: currentLevel)

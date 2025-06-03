@@ -1,5 +1,5 @@
 //
-//  Rifle.swift
+//  knife.swift
 //  末日小径
 //
 //  Created for 末日小径 game
@@ -7,34 +7,31 @@
 
 import SpriteKit
 
-class Rifle: Defend {
+class Knife: Defend {
     // 子弹速度
     private let bulletSpeed: CGFloat = 1500.0
 
     // 子弹大小
     private let bulletSize = CGSize(width: 8, height: 3)
 
-    // 子弹颜色
-    private let bulletColor = SKColor.yellow
-
     // 初始化方法
     init() {
         // 使用ResourceManager获取纹理
-        let texture = ResourceManager.shared.getTexture(named: "rifle_idle")
+        let texture = ResourceManager.shared.getTexture(named: "knife_idle")
 
         // 使用步枪特定的属性初始化
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
-            name: "步枪手",
-            attackPower: 3,          // 攻击力
+            name: "刀战手",
+            attackPower: 10,          // 攻击力
             fireRate: 2.0,           // 射速（每秒2次）
             health: 50,              // 生命值
             price: 100,              // 价格
-            attackRange: 400.0       // 攻击范围
+            attackRange: 70.0       // 攻击范围
         )
 
-        // 设置步枪特有的属性
-        self.setScale(1) // 调整大小
+        // 设置刀战特有的属性
+        self.setScale(1.2) // 调整大小
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -48,8 +45,8 @@ class Rifle: Defend {
 
         // 创建子弹
         let bullet = SKShapeNode(rectOf: bulletSize)
-        bullet.fillColor = bulletColor
-        bullet.strokeColor = bulletColor
+        bullet.fillColor = SKColor.clear // 设置子弹填充颜色为透明
+        bullet.strokeColor = SKColor.clear // 设置子弹边框颜色为透明
         bullet.zPosition = 150  // 设置子弹的zPosition高于僵尸，确保可见
         bullet.name = "bullet"
 
@@ -63,7 +60,7 @@ class Rifle: Defend {
         let towerPositionInScene = parent.convert(self.position, to: scene)
 
         // 设置子弹初始位置在炮塔上方一点（Y坐标增加20）
-        bullet.position = CGPoint(x: towerPositionInScene.x + 13, y: towerPositionInScene.y + 20)
+        bullet.position = CGPoint(x: towerPositionInScene.x, y: towerPositionInScene.y)
 
         // 添加子弹到场景
         scene.addChild(bullet)
@@ -158,7 +155,7 @@ class Rifle: Defend {
         hitEffect.particleScale = 0.2
         hitEffect.particleScaleRange = 0.1
         hitEffect.particleScaleSpeed = -0.5
-        hitEffect.particleColor = bulletColor
+        hitEffect.particleColor = SKColor.yellow // 设置命中效果颜色为黄色
         hitEffect.particleColorBlendFactor = 1.0
         hitEffect.particleBlendMode = .add
 
@@ -179,7 +176,7 @@ class Rifle: Defend {
     // 播放射击音效
     private func playShootSound() {
         // 创建射击音效动作
-        let soundAction = SKAction.playSoundFileNamed("rifle_shot.mp3", waitForCompletion: false)
+        let soundAction = SKAction.playSoundFileNamed("knife_shot.mp3", waitForCompletion: false)
 
         // 运行音效动作
         self.run(soundAction)
@@ -206,25 +203,25 @@ class Rifle: Defend {
         self.run(SKAction.rotate(toAngle: 0, duration: 0.1))
 
         // 恢复原始纹理
-        self.texture = ResourceManager.shared.getTexture(named: "rifle_idle")
+        self.texture = ResourceManager.shared.getTexture(named: "knife_idle")
     }
 
     // 播放射击动画
     private func playShootAnimation() {
         // 从ResourceManager获取动画
-        if let animation = ResourceManager.shared.createAnimation(forKey: "rifle_shoot", timePerFrame: 0.05) {
+        if let animation = ResourceManager.shared.createAnimation(forKey: "knife_shoot", timePerFrame: 0.05) {
             // 播放射击动画
             self.run(animation, withKey: "shootAnimation")
         } else {
             // 如果从ResourceManager获取失败，创建备用动画
-            print("警告：无法从ResourceManager获取rifle_shoot动画，创建备用动画")
+            print("警告：无法从ResourceManager获取knife_shoot动画，创建备用动画")
 
             // 创建动画帧数组
             var frames: [SKTexture] = []
 
             // 加载3帧射击动画
-            for i in 1...3 {
-                let textureName = "rifle_shoot_\(i)"
+            for i in 1...5 {
+                let textureName = "knife_shoot_\(i)"
                 let texture = ResourceManager.shared.getTexture(named: textureName)
                 frames.append(texture)
             }

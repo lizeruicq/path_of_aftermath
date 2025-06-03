@@ -201,13 +201,15 @@ class GameManager {
             clearPreviousWaveZombies()
 
             // 获取当前波次的僵尸配置
-            if let waveConfig = waveConfigs[currentWave - 1] as? [[String: Any]] {
-                // 多种僵尸类型的情况
-                currentWaveZombies = waveConfig
-            } else if let waveConfig = waveConfigs[currentWave - 1] as? [String: Any] {
-                // 单一僵尸类型的情况
-                currentWaveZombies = [waveConfig]
-            }
+//            if let waveConfig = waveConfigs[currentWave - 1] as? [[String: Any]] {
+//                // 多种僵尸类型的情况
+//                currentWaveZombies = waveConfig
+//            } else if let waveConfig = waveConfigs[currentWave - 1] as? [String: Any] {
+//                // 单一僵尸类型的情况
+//                currentWaveZombies = [waveConfig]
+//            }
+            let waveConfig = waveConfigs[currentWave - 1]
+            currentWaveZombies = [waveConfig]
 
             // 生成僵尸
             spawnZombies()
@@ -258,21 +260,38 @@ class GameManager {
         }
 
         // 当前总延迟时间
-        var currentTotalDelay: TimeInterval = 0
+//        var currentTotalDelay: TimeInterval = 0
 
         // 遍历当前波次的僵尸配置
-        for zombieConfig in currentWaveZombies {
-            // 获取僵尸类型和数量
-            guard let typeString = zombieConfig["enemyType"] as? String,
-                  let count = zombieConfig["count"] as? Int,
-                  let type = ZombieType(rawValue: typeString) else {
+        for wave in currentWaveZombies {
+            // 获取僵尸配置中的所有可能类型
+            var zombieTypes: [ZombieType] = []
+            
+            // 检查并收集所有enemyType键
+            for (key, value) in wave {
+                if key.hasPrefix("enemyType") {
+                    if let typeString = value as? String,
+                       let zombieType = ZombieType(rawValue: typeString) {
+                        zombieTypes.append(zombieType)
+                    }
+                }
+            }
+            
+            // 获取僵尸总数
+            guard let count = wave["count"] as? Int,
+                  !zombieTypes.isEmpty else {
                 continue
             }
 
             // 生成指定数量的僵尸
             for i in 0..<count {
+                // 随机选择一个僵尸类型
+                let randomTypeIndex = Int.random(in: 0..<zombieTypes.count)
+                let selectedType = zombieTypes[randomTypeIndex]
+                
                 // 创建僵尸
-                let zombie = createZombie(type: type)
+                let zombie = createZombie(type: selectedType)
+//                zombie.setScale(0.7)
 
                 // 随机选择中心三列之一的X坐标
                 let randomIndex = Int.random(in: 0..<centerColumnPositions.count)
@@ -280,7 +299,7 @@ class GameManager {
 
                 // 计算垂直偏移，确保同一列的僵尸在垂直方向上有足够间隔
                 // 使用僵尸索引来计算垂直偏移，确保每个僵尸的位置不同
-                let verticalOffset = CGFloat(i) * zombie.size.height * 1.0 // 使用僵尸高度的1倍作为垂直间隔
+                let verticalOffset = CGFloat(i) * zombie.size.height * 1 // 使用僵尸高度的1倍作为垂直间隔
 
                 // 设置僵尸初始位置，添加垂直偏移
                 let initialY = scene.size.height + verticalOffset
@@ -297,10 +316,11 @@ class GameManager {
                 let totalDistance = initialY + zombie.size.height // 从初始位置到屏幕底部的总距离
                 let baseDuration = TimeInterval(totalDistance / zombie.speed)
 
+
                 // 不添加任何延迟，所有僵尸同时开始移动
                 let totalDelay: TimeInterval = 0
 
-                print("僵尸\(i+1)生成在x=\(xPos)，y=\(initialY)，无延迟")
+                
 
                 // 计算目标位置（屏幕底部以下）
                 let destinationY = -zombie.size.height
@@ -309,7 +329,7 @@ class GameManager {
                 // 直接开始移动，不添加延迟
                 // 使用僵尸的startMoving方法
                 zombie.startMoving(to: destination, duration: baseDuration)
-                print("僵尸开始移动，从y=\(zombie.position.y)到y=\(destinationY)，持续时间=\(baseDuration)秒")
+                
             }
         }
     }
@@ -319,10 +339,16 @@ class GameManager {
         switch type {
         case .walker:
             return Walker()
-//        case .runner:
-//            return Runner()
-//        case .tank:
-//            return Tank()
+        case .sword:
+            return Sword()
+        case .runner:
+            return Runner()
+        case .boomer:
+            return Boomer()
+        case .plant:
+            return Plant()
+        case .trans:
+            return Trans()
         }
     }
 

@@ -13,17 +13,24 @@ class Walker: Zombie {
     }
 
     init() {
+        
         // 从配置中获取Walker的属性
         let config = zombieConfigs[ZombieType.walker.rawValue] ?? [:]
         let health = config["health"] as? Int ?? 30
         let speed = config["speed"] as? CGFloat ?? 30
+        print("僵尸移动速度为 \(speed)")
         let damage = config["damage"] as? Int ?? 10
         let attackRate = config["attackRate"] as? Double ?? 1.0
         let rewardMoney = config["rewardMoney"] as? Int ?? 10
+        let scale = config["scale"] as? Double ?? 0.3
+        
 
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "walker_move_1")
         super.init(texture: texture, speed: speed, health: health, damage: damage, attackrate: attackRate, rewardMoney: rewardMoney)
+        
+        
+        self.setScale(scale)
 
         // 设置各种状态的动画
         setupAnimations()
@@ -48,7 +55,7 @@ class Walker: Zombie {
     // 设置移动动画
     private func setupMoveAnimation() {
         // 从ResourceManager获取动画
-        if let animation = ResourceManager.shared.createAnimation(forKey: "walker_move", timePerFrame: 0.1, repeatForever: true) {
+        if let animation = ResourceManager.shared.createAnimation(forKey: "walker_move", timePerFrame: 0.2, repeatForever: true) {
             // 保存移动动画
             moveAnimation = animation
 
@@ -87,8 +94,8 @@ class Walker: Zombie {
         // 由于没有专门的攻击动画帧，我们使用移动帧的变体作为攻击动画
         var frames: [SKTexture] = []
 
-        // 使用移动帧1, 3, 5, 7作为攻击帧
-        let attackFrameNames = ["walker_move_1", "walker_move_3", "walker_move_5", "walker_move_7"]
+        
+        let attackFrameNames = ["walker_attack_1", "walker_attack_2", "walker_attack_3", "walker_attack_4","walker_attack_5"]
 
         for frameName in attackFrameNames {
             let texture = ResourceManager.shared.getTexture(named: frameName)
@@ -96,7 +103,7 @@ class Walker: Zombie {
         }
 
         // 创建攻击动画（更快的帧率）
-        let animation = SKAction.animate(with: frames, timePerFrame: 0.08)
+        let animation = SKAction.animate(with: frames, timePerFrame: 0.2)
 
         // 创建永久循环的攻击动画（持续攻击直到目标被摧毁）
         let repeatForever = SKAction.repeatForever(animation)

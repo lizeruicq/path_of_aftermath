@@ -10,97 +10,146 @@ import Foundation
 // 僵尸类型枚举
 enum ZombieType: String {
     case walker = "walker"
-//    case runner = "runner"
-//    case tank = "tank"
+    case sword = "sword"
+    case runner = "runner"
+    case boomer = "boomer"
+    case trans = "trans"
+    case plant = "plant"
+
 }
 
 // 僵尸配置数据
 let zombieConfigs: [String: [String: Any]] = [
     ZombieType.walker.rawValue: [
         "name": "行走者",
-        "health": 30,
-        "speed": 30,
+        "health": 50,
+        "speed": NSNumber(value: 50.0),
         "damage": 10,
         "attackRate": 1.0,
-        "rewardMoney": 50  // 击杀奖励金币
+        "rewardMoney": 50,  // 击杀奖励金币
+        "scale":0.18
+    ],
+    ZombieType.sword.rawValue: [
+        "name": "武士",
+        "health": 50,
+        "speed": NSNumber(value: 50.0),
+        "damage": 10,
+        "attackRate": 1.0,
+        "rewardMoney": 50,
+        "scale":0.25
+    ],
+    ZombieType.runner.rawValue: [
+        "name": "跑者",
+        "health": 50,
+        "speed": NSNumber(value: 50.0),
+        "damage": 10,
+        "attackRate": 1.0,
+        "rewardMoney": 50,  // 击杀奖励金币
+        "scale": 0.6
+    ],
+    ZombieType.boomer.rawValue: [
+        "name": "毒气",
+        "health": 50,
+        "speed": NSNumber(value: 50.0),
+        "damage": 10,
+        "attackRate": 1.0,
+        "rewardMoney": 50,  // 击杀奖励金币
+        "scale":0.26
+    ],
+    ZombieType.trans.rawValue: [
+        "name": "化身",
+        "health": 50,
+        "speed": NSNumber(value: 50.0),
+        "damage": 10,
+        "attackRate": 1.0,
+        "rewardMoney": 50,  // 击杀奖励金币
+        "scale":0.23
+    ],
+    ZombieType.plant.rawValue: [
+        "name": "植物",
+        "health": 50,
+        "speed": NSNumber(value: 50.0),
+        "damage": 10,
+        "attackRate": 1.0,
+        "rewardMoney": 50,  // 击杀奖励金币
+        "scale":0.23
     ]
-    // 未来可以添加更多僵尸类型的配置
-    // "runner": [
-    //     "name": "奔跑者",
-    //     "health": 5,
-    //     "speed": 20,
-    //     "damage": 5,
-    //     "attackRate": 1.0,
-    //     "rewardMoney": 15
-    // ],
-    // "tank": [
-    //     "name": "坦克",
-    //     "health": 100,
-    //     "speed": 5,
-    //     "damage": 15,
-    //     "attackRate": 1.0,
-    //     "rewardMoney": 25
-    // ]
+
 ]
 
 // 炮塔类型枚举
 enum TowerType: String {
     case rifle = "rifle"       // 步枪
     case shotgun = "shotgun"       // 霰弹枪
-//    case machineGun = "machineGun"  // 机关枪
-//    case sniper = "sniper"     // 狙击枪
-//    case rocket = "rocket"     // 火箭炮
+    case supergun = "super"       // 霰弹枪
+    case chaingun = "chaingun"   // 机枪
+    case knife = "knife"       // 刀战
+    case cover = "cover"
+
 }
 
 // 炮塔配置数据
 let towerConfigs: [String: [String: Any]] = [
     TowerType.rifle.rawValue: [
         "name": "步枪手",
-        "image": "rifle_idle",
-        "attackPower": 5,
+        "image": "rifle_icon",
+        "attackPower": 3,
         "fireRate": 2.0,
         "health": 50,
-        "price": 100,
-        "attackRange": 300.0
+        "price": 10,
+        "attackRange": 400.0
+    ],
+    
+    TowerType.chaingun.rawValue: [
+        "name": "机枪手",
+        "image": "chaingun_icon",
+        "attackPower": 2,
+        "fireRate": 6.0,
+        "health": 50,
+        "price": 20,
+        "attackRange": 400.0
     ],
 
     TowerType.shotgun.rawValue: [
         "name": "霰弹枪手",
-        "image": "shotgun_idle",
+        "image": "shotgun_icon",
+        "attackPower": 3,
+        "fireRate": 1.0,
+        "health": 50,
+        "price": 15,
+        "attackRange": 200.0
+    ],
+    
+    TowerType.supergun.rawValue: [
+        "name": "超级战士",
+        "image": "super_icon",
         "attackPower": 5,
         "fireRate": 1.0,
         "health": 50,
-        "price": 150,
+        "price": 15,
         "attackRange": 300.0
     ],
+    
+    TowerType.knife.rawValue: [
+        "name": "刀战手",
+        "image": "knife_icon",
+        "attackPower": 10,
+        "fireRate": 2.0,
+        "health": 50,
+        "price": 10,
+        "attackRange": 50.0
+    ],
+    
+    TowerType.cover.rawValue: [
+        "name": "掩体",
+        "image": "cover_icon",
+        "attackPower": 0,
+        "fireRate": 0,
+        "health": 100,
+        "price": 20,
+        "attackRange": 0
+    ],
 
-//    TowerType.machineGun.rawValue: [
-//        "name": "机关枪",
-//        "image": "machinegun_tower",
-//        "attackPower": 3,
-//        "fireRate": 5.0,
-//        "health": 40,
-//        "price": 200,
-//        "attackRange": 150.0
-//    ],
-//    TowerType.sniper.rawValue: [
-//        "name": "狙击枪",
-//        "image": "sniper_tower",
-//        "attackPower": 20,
-//        "fireRate": 0.5,
-//        "health": 30,
-//        "price": 300,
-//        "attackRange": 350.0
-//    ],
-//    TowerType.rocket.rawValue: [
-//        "name": "火箭炮",
-//        "image": "rocket_tower",
-//        "attackPower": 15,
-//        "fireRate": 1.0,
-//        "health": 60,
-//        "price": 400,
-//        "attackRange": 250.0
-//    ]
 ]
 
 // 关卡结构配置
@@ -125,17 +174,17 @@ struct LevelStructure {
                 LevelInfo(id: 7, name: "学校"),
                 LevelInfo(id: 8, name: "医院")
             ]
-        ),
-        ChapterConfig(
-            id: 3,
-            name: "盐湖城",
-            levels: [
-                LevelInfo(id: 9, name: "郊区"),
-                LevelInfo(id: 10, name: "工厂"),
-                LevelInfo(id: 11, name: "大桥"),
-                LevelInfo(id: 12, name: "终点")
-            ]
         )
+//        ChapterConfig(
+//            id: 3,
+//            name: "盐湖城",
+//            levels: [
+//                LevelInfo(id: 9, name: "郊区"),
+//                LevelInfo(id: 10, name: "工厂"),
+//                LevelInfo(id: 11, name: "大桥"),
+//                LevelInfo(id: 12, name: "终点")
+//            ]
+//        )
     ]
 }
 
@@ -156,17 +205,45 @@ let levelConfigs: [[String: Any]] = [
         "level": 1,
         "initialFunds": 500, // 初始金币
         "waves": [
-            [ // walker僵尸
-                    "enemyType": ZombieType.walker.rawValue,
-                    "count": 20
-            ],
-            [ // walker僵尸
-                    "enemyType": ZombieType.walker.rawValue,
-                    "count": 30
-            ]
+              // walker僵尸
+                [
+                    "enemyType1": ZombieType.walker.rawValue,
+                    "enemyType2": ZombieType.sword.rawValue,
+                    "enemyType3": ZombieType.runner.rawValue,
+                    "enemyType4": ZombieType.trans.rawValue,
+                    "enemyType5": ZombieType.boomer.rawValue,
+                    "enemyType6": ZombieType.plant.rawValue,
+                    "count": 50
+                ],
+                [
+                    "enemyType1": ZombieType.walker.rawValue,
+                    "enemyType2": ZombieType.sword.rawValue,
+                    "enemyType3": ZombieType.runner.rawValue,
+                    "enemyType4": ZombieType.trans.rawValue,
+                    "enemyType5": ZombieType.boomer.rawValue,
+                    "enemyType6": ZombieType.plant.rawValue,
+                    "count": 50
+                ],
+                [
+                    "enemyType1": ZombieType.walker.rawValue,
+                    "enemyType2": ZombieType.sword.rawValue,
+                    "enemyType3": ZombieType.runner.rawValue,
+                    "enemyType4": ZombieType.trans.rawValue,
+                    "enemyType5": ZombieType.boomer.rawValue,
+                    "enemyType6": ZombieType.plant.rawValue,
+                    "count": 50
+                ]
+                    
+            
+            
         ],
         "availableTowers": [
-            TowerType.rifle.rawValue
+            TowerType.rifle.rawValue,
+            TowerType.shotgun.rawValue,
+            TowerType.supergun.rawValue,
+            TowerType.chaingun.rawValue,
+            TowerType.knife.rawValue,
+            TowerType.cover.rawValue
 
         ]
     ],
@@ -174,20 +251,21 @@ let levelConfigs: [[String: Any]] = [
         "level": 2,
         "initialFunds": 700, // 初始金币
         "waves": [
-            [ // 第一波敌人
-                [ // walker僵尸
+            [
+                [
                     "enemyType": ZombieType.walker.rawValue,
-                    "count": 3
+                    "count": 20
                 ],
-
-            ]
+                [
+                    "enemyType": ZombieType.sword.rawValue,
+                    "count": 10
+                ]
+            ],
         ],
         "availableTowers": [
             TowerType.rifle.rawValue,
             TowerType.shotgun.rawValue,
-//            TowerType.machineGun.rawValue,
-//            TowerType.sniper.rawValue,
-//            TowerType.rocket.rawValue
+
         ]
     ],
     [ // 第三关配置
@@ -195,9 +273,26 @@ let levelConfigs: [[String: Any]] = [
         "initialFunds": 800,
         "waves": [
             [
-                "enemyType": ZombieType.walker.rawValue,
-                "count": 25
+                [
+                    "enemyType": ZombieType.walker.rawValue,
+                    "count": 20
+                ],
+                [
+                    "enemyType": ZombieType.sword.rawValue,
+                    "count": 10
+                ]
             ],
+            [
+                [
+                    "enemyType": ZombieType.walker.rawValue,
+                    "count": 25
+                ],
+                [
+                    "enemyType": ZombieType.sword.rawValue,
+                    "count": 10
+                ]
+            ],
+            
             [
                 "enemyType": ZombieType.walker.rawValue,
                 "count": 35

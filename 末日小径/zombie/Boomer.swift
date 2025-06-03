@@ -1,7 +1,7 @@
 
 import SpriteKit
 
-class Trans: Zombie {
+class Boomer: Zombie {
     // 移动速度（重写父类属性）
     override var speed: CGFloat {
         get {
@@ -14,17 +14,18 @@ class Trans: Zombie {
 
     init() {
  
-        let config = zombieConfigs[ZombieType.trans.rawValue] ?? [:]
+        let config = zombieConfigs[ZombieType.boomer.rawValue] ?? [:]
         let health = config["health"] as? Int ?? 30
         let speed = config["speed"] as? CGFloat ?? 30
         let damage = config["damage"] as? Int ?? 10
         let attackRate = config["attackRate"] as? Double ?? 1.0
         let rewardMoney = config["rewardMoney"] as? Int ?? 10
+        let scale = config["scale"] as? Double ?? 0.3
 
         // 使用ResourceManager获取纹理
-        let texture = ResourceManager.shared.getTexture(named: "trans_move_1")
+        let texture = ResourceManager.shared.getTexture(named: "boomer_move_1")
         super.init(texture: texture, speed: speed, health: health, damage: damage, attackrate: attackRate, rewardMoney: rewardMoney)
-
+        self.setScale(scale)
         // 设置各种状态的动画
         setupAnimations()
     }
@@ -48,7 +49,7 @@ class Trans: Zombie {
     // 设置移动动画
     private func setupMoveAnimation() {
         // 从ResourceManager获取动画
-        if let animation = ResourceManager.shared.createAnimation(forKey: "trans_move", timePerFrame: 0.1, repeatForever: true) {
+        if let animation = ResourceManager.shared.createAnimation(forKey: "boomer_move", timePerFrame: 0.2, repeatForever: true) {
             // 保存移动动画
             moveAnimation = animation
 
@@ -56,14 +57,14 @@ class Trans: Zombie {
             self.run(animation, withKey: "animation")
         } else {
             // 如果从ResourceManager获取失败，创建备用动画
-            print("警告：无法从ResourceManager获取trans_move动画，创建备用动画")
+            print("警告：无法从ResourceManager获取boomer_move动画，创建备用动画")
 
             // 创建动画帧数组
             var frames: [SKTexture] = []
 
             // 加载7帧动画
-            for i in 1...3 {
-                let textureName = "trans_move_\(i)"
+            for i in 1...4{
+                let textureName = "boomer_move_\(i)"
                 let texture = ResourceManager.shared.getTexture(named: textureName)
                 frames.append(texture)
             }
@@ -88,7 +89,7 @@ class Trans: Zombie {
         var frames: [SKTexture] = []
 
         
-        let attackFrameNames = ["trans_attack_1", "trans_attack_2", "trans_attack_3", "trans_attack_4", "trans_attack_5"]
+        let attackFrameNames = ["boomer_attack_1", "boomer_attack_2", "boomer_attack_3", "boomer_attack_4"]
 
         for frameName in attackFrameNames {
             let texture = ResourceManager.shared.getTexture(named: frameName)
@@ -96,7 +97,7 @@ class Trans: Zombie {
         }
 
         // 创建攻击动画（更快的帧率）
-        let animation = SKAction.animate(with: frames, timePerFrame: 0.08)
+        let animation = SKAction.animate(with: frames, timePerFrame: 0.2)
 
         // 创建永久循环的攻击动画（持续攻击直到目标被摧毁）
         let repeatForever = SKAction.repeatForever(animation)

@@ -26,11 +26,11 @@ class Rifle: Defend {
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
             name: "步枪手",
-            attackPower: 5,          // 攻击力
+            attackPower: 3,          // 攻击力
             fireRate: 2.0,           // 射速（每秒2次）
             health: 50,              // 生命值
             price: 100,              // 价格
-            attackRange: 500.0       // 攻击范围
+            attackRange: 400.0       // 攻击范围
         )
 
         // 设置步枪特有的属性
