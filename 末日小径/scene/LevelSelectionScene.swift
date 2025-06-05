@@ -338,6 +338,7 @@ extension LevelSelectionScene: LevelSelectionPanelDelegate {
     // 关卡选择面板选择了关卡
     func levelSelectionPanel(_ panel: LevelSelectionPanel, didSelectLevel levelId: Int) {
         print("场景接收到关卡选择: \(levelId)")
+        SoundManager.shared.playSoundEffect("touch",in: self)
         startLoadingGameScene(forLevel: levelId)
     }
 

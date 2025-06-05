@@ -178,11 +178,10 @@ class Super: Defend {
 
     // 播放射击音效
     private func playShootSound() {
-        // 创建射击音效动作
-        let soundAction = SKAction.playSoundFileNamed("super_shot.mp3", waitForCompletion: false)
-
-        // 运行音效动作
-        self.run(soundAction)
+        // 使用 SoundManager 控制音效播放
+        if let scene = self.scene {
+            SoundManager.shared.playSoundEffect("super_shot", in: scene)
+        }
     }
 
     // 开始攻击动画

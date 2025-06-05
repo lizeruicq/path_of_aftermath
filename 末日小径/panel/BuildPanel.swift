@@ -77,7 +77,7 @@ class BuildPanel: SKNode {
 
         // 添加标题
         let titleLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
-        titleLabel.text = "建造炮塔"
+        titleLabel.text = "防线"
         titleLabel.fontSize = 20
         titleLabel.fontColor = SKColor.white
         titleLabel.position = CGPoint(x: panelWidth / 2, y: panelHeight - 30)
@@ -126,7 +126,7 @@ class BuildPanel: SKNode {
 
         // 添加标题
         let titleLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
-        titleLabel.text = "建造炮塔"
+        titleLabel.text = "防线"
         titleLabel.fontSize = 20
         titleLabel.fontColor = SKColor.white
         titleLabel.position = CGPoint(x: panelWidth / 2, y: panelHeight - 30)
@@ -175,10 +175,10 @@ class BuildPanel: SKNode {
             // 创建价格标签
             let priceLabel = SKLabelNode(fontNamed: "Helvetica")
             let price = towerConfig["price"] as? Int ?? 0
-            priceLabel.text = "价格: \(price)"
+            priceLabel.text = "$: \(price)"
             priceLabel.fontSize = 12
             priceLabel.fontColor = SKColor.yellow
-            priceLabel.position = CGPoint(x: 0, y: -itemSize / 2 - 10)
+            priceLabel.position = CGPoint(x: 0, y: -itemSize / 2 - 12)
             priceLabel.zPosition = 2  // 价格在图片之上
             priceLabel.name = "price_label_\(towerType.rawValue)"
 
@@ -276,9 +276,10 @@ class BuildPanel: SKNode {
                 // 检查是否有足够的金币
                 let price = PlayerEconomyManager.shared.getTowerPrice(type: towerType)
                 if !PlayerEconomyManager.shared.canAfford(price) {
-                    // 播放错误音效
-                    let errorSoundAction = SKAction.playSoundFileNamed("error.mp3", waitForCompletion: false)
-                    run(errorSoundAction)
+                    if let scene = self.scene {
+                        // 播放错误音效
+                        SoundManager.shared.playSoundEffect("error", in: scene)
+                    }
 
                     // 显示禁用状态动画
                     if let itemContainer = self.childNode(withName: "tower_item_\(towerType.rawValue)"),

@@ -19,12 +19,20 @@ class MainMenuScene: SKScene {
     // 开始游戏按钮
     private var startButton: SKSpriteNode?
     private var startButtonLabel: SKLabelNode?
+    
+    // 重置进度按钮
+    private var resetButton: SKSpriteNode?
+    private var resetButtonLabel: SKLabelNode?
 
     // 设置按钮
     private var settingsButton: SKSpriteNode?
     private var settingsButtonLabel: SKLabelNode?
+    
+    // 确认面板
+    private var confirmationPanel: ConfirmationPanel?
 
     override func didMove(to view: SKView) {
+        SoundManager.shared.playBackgroundMusic()
         setupBackground()
         setupTitle()
         setupButtons()
@@ -32,8 +40,7 @@ class MainMenuScene: SKScene {
 
     // 设置背景
     private func setupBackground() {
-//        重制关卡解锁
-        LevelProgressManager.shared.resetProgress()
+
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "background")
 
@@ -93,6 +100,26 @@ class MainMenuScene: SKScene {
             startButton.addChild(startButtonLabel)
             addChild(startButton)
         }
+        
+        // 创建重置进度按钮
+        resetButton = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.7), size: CGSize(width: 200, height: 50))
+        resetButtonLabel = SKLabelNode(fontNamed: "Helvetica")
+
+        if let resetButton = resetButton, let resetButtonLabel = resetButtonLabel {
+            resetButton.position = CGPoint(x: self.size.width / 2, y: self.size.height * 0.2) // 在开始按钮下方增加间距
+            resetButton.name = "resetButton"
+            resetButton.zPosition = 10
+
+            resetButtonLabel.text = "重置进度"
+            resetButtonLabel.fontSize = 20
+            resetButtonLabel.fontColor = SKColor.white
+            resetButtonLabel.verticalAlignmentMode = .center
+            resetButtonLabel.horizontalAlignmentMode = .center
+            resetButtonLabel.position = CGPoint.zero
+
+            resetButton.addChild(resetButtonLabel)
+            addChild(resetButton)
+        }
 
         // 创建设置按钮
         settingsButton = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.7), size: CGSize(width: 200, height: 50))
@@ -103,7 +130,8 @@ class MainMenuScene: SKScene {
             settingsButton.name = "settingsButton"
             settingsButton.zPosition = 10
 
-            settingsButtonLabel.text = "设置"
+            // 根据 SoundManager 的状态设置初始文本
+            settingsButtonLabel.text = SoundManager.shared.isSoundEnabled ? "音效：开" : "音效：关"
             settingsButtonLabel.fontSize = 20
             settingsButtonLabel.fontColor = SKColor.white
             settingsButtonLabel.verticalAlignmentMode = .center
@@ -124,14 +152,62 @@ class MainMenuScene: SKScene {
         for node in touchedNodes {
             if node.name == "startButton" || node.parent?.name == "startButton" {
                 startGame()
+            } else if node.name == "resetButton" || node.parent?.name == "resetButton" {
+                showConfirmationPanel()
             } else if node.name == "settingsButton" || node.parent?.name == "settingsButton" {
-                openSettings()
+                // 切换音效状态
+                SoundManager.shared.toggleSound()
+                
+                // 更新按钮文字
+                if let label = settingsButtonLabel {
+                    label.text = SoundManager.shared.isSoundEnabled ? "音效：开" : "音效：关"
+                }
             }
+            
+            SoundManager.shared.playSoundEffect("touch",in: self)
         }
+    }
+    
+    // 处理触摸结束事件
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        
+        // 如果确认面板存在，将触摸事件传递给它
+        if let confirmationPanel = confirmationPanel {
+            // 将触摸位置转换为面板坐标系
+            let panelLocation = touch.location(in: confirmationPanel)
+            confirmationPanel.handleTouchBegan(at: panelLocation)
+            confirmationPanel.handleTouchEnded(at: panelLocation)
+        }
+    }
+    
+    // 显示确认面板
+    private func showConfirmationPanel() {
+        // 如果已经显示，不重复创建
+        if confirmationPanel != nil {
+            return
+        }
+        
+        // 创建确认面板
+        confirmationPanel = ConfirmationPanel(size: self.size)
+        confirmationPanel?.delegate = self
+        confirmationPanel?.zPosition = 1000 // 确保在所有元素之上
+        
+        // 添加到场景
+        if let confirmationPanel = confirmationPanel {
+            addChild(confirmationPanel)
+        }
+    }
+    
+    // 隐藏确认面板
+    private func hideConfirmationPanel() {
+        confirmationPanel?.removeFromParent()
+        confirmationPanel = nil
     }
 
     // 开始游戏
     private func startGame() {
+        
         // 创建关卡选择场景实例
         let levelSelectionScene = LevelSelectionScene(size: self.size)
         levelSelectionScene.scaleMode = .aspectFill
@@ -144,10 +220,62 @@ class MainMenuScene: SKScene {
             view.presentScene(levelSelectionScene, transition: transition)
         }
     }
+    
+    // 重置进度
+    private func resetProgress() {
+        // 调用关卡进度管理器重置进度
+        LevelProgressManager.shared.resetProgress()
+        
+        // 可以添加提示信息
+        showMessage("进度已重置")
+    }
 
     // 打开设置
     private func openSettings() {
         // 这里可以实现设置功能，目前只是一个占位
         print("打开设置")
+    }
+    
+    private func showMessage(_ message: String) {
+        // 创建错误消息标签
+        let errorLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
+        errorLabel.text = message
+        errorLabel.fontSize = 24
+        errorLabel.fontColor = SKColor.red
+        errorLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+        errorLabel.zPosition = 100
+
+        // 添加到场景
+        addChild(errorLabel)
+
+        // 创建淡出动作
+        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        let wait = SKAction.wait(forDuration: 2.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let remove = SKAction.removeFromParent()
+
+        // 运行动作序列
+        errorLabel.alpha = 0
+        errorLabel.run(SKAction.sequence([fadeIn, wait, fadeOut, remove]))
+    }
+}
+
+
+
+
+// MARK: - ConfirmationPanelDelegate
+extension MainMenuScene: ConfirmationPanelDelegate {
+    func confirmationPanelDidConfirm(_ panel: ConfirmationPanel) {
+        // 用户点击"是"，执行重置操作
+        resetProgress()
+        
+        // 隐藏确认面板
+        hideConfirmationPanel()
+    }
+    
+    func confirmationPanelDidCancel(_ panel: ConfirmationPanel) {
+        // 用户点击"否"，取消操作
+        // 不执行任何操作，仅隐藏面板
+        hideConfirmationPanel()
     }
 }

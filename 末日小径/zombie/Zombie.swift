@@ -330,12 +330,20 @@ class Zombie: SKSpriteNode {
 //            self.run(flash)
         }
     }
+    
+    private func playFallSound() {
+        // 使用 SoundManager 控制音效播放
+        if let scene = self.scene {
+            SoundManager.shared.playSoundEffect("death", in: scene)
+        }
+    }
 
     // 死亡
     func die() {
         // 切换到死亡状态
         changeState(to: .dying)
-
+        
+        playFallSound()
         // 停止所有动作
         self.removeAllActions()
 

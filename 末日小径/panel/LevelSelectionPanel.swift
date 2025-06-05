@@ -47,7 +47,7 @@ class LevelSelectionPanel: SKNode {
         let panelWidth = panelSize.width * 0.9
         let panelHeight = panelSize.height * 0.75  // 留出空间给返回按钮
         let panelX = panelSize.width * 0.05
-        let panelY = panelSize.height * 0.2  // 从更高的位置开始，为返回按钮留空间
+        let panelY = panelSize.height * 0.1  // 从更高的位置开始，为返回按钮留空间
 
         // // 创建面板背景
         // let panelBackground = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.3), size: CGSize(width: panelWidth, height: panelHeight))
@@ -155,7 +155,7 @@ class LevelSelectionPanel: SKNode {
                           containerHeight: containerHeight)
 
             // 添加滑动指示器
-            addScrollIndicators(to: clipContainer, containerWidth: containerWidth, containerHeight: containerHeight)
+//            addScrollIndicators(to: clipContainer, containerWidth: containerWidth, containerHeight: containerHeight)
         }
 
         // 应用裁剪遮罩
@@ -187,54 +187,54 @@ class LevelSelectionPanel: SKNode {
     }
 
     // 添加滑动指示器
-    private func addScrollIndicators(to container: SKNode, containerWidth: CGFloat, containerHeight: CGFloat) {
-        // 左侧渐变指示器
-        let leftIndicator = createGradientIndicator(width: 20, height: containerHeight, isLeft: true)
-        leftIndicator.position = CGPoint(x: 10, y: containerHeight/2)
-        leftIndicator.zPosition = 50
-        container.addChild(leftIndicator)
-
-        // 右侧渐变指示器
-        let rightIndicator = createGradientIndicator(width: 20, height: containerHeight, isLeft: false)
-        rightIndicator.position = CGPoint(x: containerWidth - 10, y: containerHeight/2)
-        rightIndicator.zPosition = 50
-        container.addChild(rightIndicator)
+//    private func addScrollIndicators(to container: SKNode, containerWidth: CGFloat, containerHeight: CGFloat) {
+//        // 左侧渐变指示器
+//        let leftIndicator = createGradientIndicator(width: 20, height: containerHeight, isLeft: true)
+//        leftIndicator.position = CGPoint(x: 10, y: containerHeight/2)
+//        leftIndicator.zPosition = 50
+//        container.addChild(leftIndicator)
+//
+//        // 右侧渐变指示器
+//        let rightIndicator = createGradientIndicator(width: 20, height: containerHeight, isLeft: false)
+//        rightIndicator.position = CGPoint(x: containerWidth - 10, y: containerHeight/2)
+//        rightIndicator.zPosition = 50
+//        container.addChild(rightIndicator)
 
         // 添加滑动提示文字（可选）
-        let scrollHint = SKLabelNode(fontNamed: "Helvetica")
-        scrollHint.text = "← 滑动查看更多 →"
-        scrollHint.fontSize = 12
-        scrollHint.fontColor = SKColor.lightGray
-        scrollHint.position = CGPoint(x: containerWidth/2, y: 10)
-        scrollHint.verticalAlignmentMode = .center
-        scrollHint.horizontalAlignmentMode = .center
-        scrollHint.zPosition = 51
-        container.addChild(scrollHint)
+//        let scrollHint = SKLabelNode(fontNamed: "Helvetica")
+//        scrollHint.text = "← 滑动查看更多 →"
+//        scrollHint.fontSize = 12
+//        scrollHint.fontColor = SKColor.lightGray
+//        scrollHint.position = CGPoint(x: containerWidth/2, y: 10)
+//        scrollHint.verticalAlignmentMode = .center
+//        scrollHint.horizontalAlignmentMode = .center
+//        scrollHint.zPosition = 51
+//        container.addChild(scrollHint)
 
         // 添加淡入淡出动画
-        let fadeAction = SKAction.sequence([
-            SKAction.fadeAlpha(to: 0.3, duration: 1.0),
-            SKAction.fadeAlpha(to: 0.8, duration: 1.0)
-        ])
-        scrollHint.run(SKAction.repeatForever(fadeAction))
-    }
+//        let fadeAction = SKAction.sequence([
+//            SKAction.fadeAlpha(to: 0.3, duration: 1.0),
+//            SKAction.fadeAlpha(to: 0.8, duration: 1.0)
+//        ])
+//        scrollHint.run(SKAction.repeatForever(fadeAction))
+//    }
 
     // 创建渐变指示器
-    private func createGradientIndicator(width: CGFloat, height: CGFloat, isLeft: Bool) -> SKNode {
-        let indicator = SKNode()
-
-        // 创建多个矩形来模拟渐变效果
-        let steps = 5
-        for i in 0..<steps {
-            let alpha = isLeft ? CGFloat(i) / CGFloat(steps - 1) : CGFloat(steps - 1 - i) / CGFloat(steps - 1)
-            let rect = SKSpriteNode(color: SKColor.black.withAlphaComponent(alpha * 0.5),
-                                   size: CGSize(width: width / CGFloat(steps), height: height))
-            rect.position = CGPoint(x: CGFloat(i) * width / CGFloat(steps) - width/2 + width/(CGFloat(steps)*2), y: 0)
-            indicator.addChild(rect)
-        }
-
-        return indicator
-    }
+//    private func createGradientIndicator(width: CGFloat, height: CGFloat, isLeft: Bool) -> SKNode {
+//        let indicator = SKNode()
+//
+//        // 创建多个矩形来模拟渐变效果
+//        let steps = 5
+//        for i in 0..<steps {
+//            let alpha = isLeft ? CGFloat(i) / CGFloat(steps - 1) : CGFloat(steps - 1 - i) / CGFloat(steps - 1)
+//            let rect = SKSpriteNode(color: SKColor.black.withAlphaComponent(alpha * 0.5),
+//                                   size: CGSize(width: width / CGFloat(steps), height: height))
+//            rect.position = CGPoint(x: CGFloat(i) * width / CGFloat(steps) - width/2 + width/(CGFloat(steps)*2), y: 0)
+//            indicator.addChild(rect)
+//        }
+//
+//        return indicator
+//    }
 
     // 创建关卡按钮
     private func createLevelButton(level: LevelInfo, buttonSize: CGSize, xPosition: CGFloat, yPosition: CGFloat) -> SKNode {
@@ -388,7 +388,7 @@ class LevelSelectionPanel: SKNode {
                     delegate?.levelSelectionPanel(self, didSelectLevel: levelId)
                 } else {
                     print("关卡\(levelId)尚未解锁")
-                    delegate?.levelSelectionPanelDidRequestShowError(self, message: "关卡尚未解锁")
+                    delegate?.levelSelectionPanelDidRequestShowError(self, message: "地区封锁中")
                 }
                 break
             }

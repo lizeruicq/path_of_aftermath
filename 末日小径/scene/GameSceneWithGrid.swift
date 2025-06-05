@@ -597,7 +597,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
             print("金币不足，无法建造炮塔")
 
             // 播放错误音效
-            let errorSoundAction = SKAction.playSoundFileNamed("error.mp3", waitForCompletion: false)
+            let errorSoundAction = SKAction.playSoundFileNamed("error.mp3.flac", waitForCompletion: false)
             run(errorSoundAction)
 
             // 显示金币不足提示（可选）
@@ -613,7 +613,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
                 // 扣除金币
                 if PlayerEconomyManager.shared.spendFunds(towerPrice) {
                     // 放置成功，播放音效
-                    let placeSoundAction = SKAction.playSoundFileNamed("tower_place.mp3", waitForCompletion: false)
+                    let placeSoundAction = SKAction.playSoundFileNamed("click.mp3.flac", waitForCompletion: false)
                     run(placeSoundAction)
 
                     // 清除选中的格子

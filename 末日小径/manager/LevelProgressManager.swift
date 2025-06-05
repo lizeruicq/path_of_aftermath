@@ -63,7 +63,7 @@ class LevelProgressManager {
         if !unlockedLevels.contains(levelId) {
             unlockedLevels.insert(levelId)
             saveProgress()
-            print("🔓 关卡 \(levelId) 已解锁")
+            print("关卡 \(levelId) 已解锁")
         }
     }
 
@@ -94,7 +94,7 @@ class LevelProgressManager {
                     let nextChapter = chapters[chapterIndex + 1]
                     if let firstLevelOfNextChapter = nextChapter.levels.first {
                         unlockLevel(firstLevelOfNextChapter.id)
-                        print("🎉 完成大关 \(chapter.name)，解锁新大关 \(nextChapter.name)")
+                        print("解锁新大关 \(nextChapter.name)")
                     }
                 }
                 break
@@ -141,7 +141,7 @@ class LevelProgressManager {
         unlockedLevels.removeAll()
         unlockedLevels.insert(1) // 重新解锁第一关
         saveProgress()
-        print("🔄 已重置所有关卡进度")
+        print("已重置所有关卡进度")
     }
 
     // MARK: - 调试方法

@@ -105,11 +105,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // }
 
         // 查找并加载rode节点
-        if let roadNode = self.childNode(withName: "//road") {
-            print("找到了road节点: \(roadNode)")
-        } else {
-            print("未找到road节点")
-        }
+//        if let roadNode = self.childNode(withName: "//road") {
+//            print("找到了road节点: \(roadNode)")
+//        } else {
+//            print("未找到road节点")
+//        }
 
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
