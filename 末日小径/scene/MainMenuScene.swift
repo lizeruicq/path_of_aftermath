@@ -150,13 +150,24 @@ class MainMenuScene: SKScene {
         let touchedNodes = nodes(at: location)
 
         for node in touchedNodes {
-            if node.name == "startButton" || node.parent?.name == "startButton" {
+            if node.name == "startButton" 
+            // || node.parent?.name == "startButton"
+             {
+                SoundManager.shared.playSoundEffect("touch",in: self)
                 startGame()
-            } else if node.name == "resetButton" || node.parent?.name == "resetButton" {
+            } else if node.name == "resetButton"
+            // || node.parent?.name == "resetButton" 
+            {
                 showConfirmationPanel()
-            } else if node.name == "settingsButton" || node.parent?.name == "settingsButton" {
+                SoundManager.shared.playSoundEffect("touch",in: self)
+            }
+             else if node.name == "settingsButton" 
+            //  || node.parent?.name == "settingsButton"
+              {
+                 
                 // 切换音效状态
                 SoundManager.shared.toggleSound()
+                 SoundManager.shared.playSoundEffect("touch",in: self)
                 
                 // 更新按钮文字
                 if let label = settingsButtonLabel {
@@ -164,7 +175,7 @@ class MainMenuScene: SKScene {
                 }
             }
             
-            SoundManager.shared.playSoundEffect("touch",in: self)
+            
         }
     }
     

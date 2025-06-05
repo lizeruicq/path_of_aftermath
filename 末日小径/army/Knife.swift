@@ -31,7 +31,7 @@ class Knife: Defend {
         )
 
         // 设置刀战特有的属性
-        self.setScale(1.2) // 调整大小
+        self.setScale(1.1) // 调整大小
     }
 
     required init?(coder aDecoder: NSCoder) {

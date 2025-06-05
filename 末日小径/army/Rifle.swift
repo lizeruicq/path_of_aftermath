@@ -34,7 +34,7 @@ class Rifle: Defend {
         )
 
         // 设置步枪特有的属性
-        self.setScale(1) // 调整大小
+        self.setScale(0.9) // 调整大小
     }
 
     required init?(coder aDecoder: NSCoder) {

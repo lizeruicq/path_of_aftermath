@@ -244,8 +244,14 @@ class Defend: SKSpriteNode {
 
     // 被摧毁
     func destroy() {
-        print("炮塔\(towerName)被摧毁")
+        print("炮塔$towerName)被摧毁")
+        if let scene = self.scene {
+            SoundManager.shared.playSoundEffect("tower_destroy", in: scene)
+        }
         changeState(to: .destroyed)
+
+        // 通知僵尸系统清理目标
+        GameManager.shared.notifyZombiesTargetDestroyed(self)
 
         // 禁用物理碰撞，防止摧毁后仍然与僵尸碰撞
         self.physicsBody?.categoryBitMask = 0

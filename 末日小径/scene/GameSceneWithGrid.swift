@@ -597,8 +597,12 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
             print("金币不足，无法建造炮塔")
 
             // 播放错误音效
-            let errorSoundAction = SKAction.playSoundFileNamed("error.mp3.flac", waitForCompletion: false)
-            run(errorSoundAction)
+//            let errorSoundAction = SKAction.playSoundFileNamed("error.mp3.flac", waitForCompletion: false)
+//            run(errorSoundAction)
+            SoundManager.shared.playSoundEffect("error", in: self)
+//            if let scene = self.scene {
+//                SoundManager.shared.playSoundEffect("chaingun_shot", in: scene)
+//            }
 
             // 显示金币不足提示（可选）
             showInsufficientFundsMessage()
@@ -613,8 +617,9 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
                 // 扣除金币
                 if PlayerEconomyManager.shared.spendFunds(towerPrice) {
                     // 放置成功，播放音效
-                    let placeSoundAction = SKAction.playSoundFileNamed("click.mp3.flac", waitForCompletion: false)
-                    run(placeSoundAction)
+//                    let placeSoundAction = SKAction.playSoundFileNamed("click.mp3.flac", waitForCompletion: false)
+//                    run(placeSoundAction)
+                    SoundManager.shared.playSoundEffect("click", in: self)
 
                     // 清除选中的格子
                     selectedCell = nil
@@ -800,9 +805,9 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         print("手动摧毁炮塔: \(tower.name ?? "未知炮塔")")
 
         // 播放摧毁音效
-        let destroySoundAction = SKAction.playSoundFileNamed("tower_destroy.mp3", waitForCompletion: false)
-        run(destroySoundAction)
-
+//        let destroySoundAction = SKAction.playSoundFileNamed("tower_destroy.mp3", waitForCompletion: false)
+//        run(destroySoundAction)
+        
         // 隐藏摧毁按钮
         hideDestroyButton()
 

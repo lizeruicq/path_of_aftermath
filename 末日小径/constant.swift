@@ -213,26 +213,26 @@ let levelConfigs: [[String: Any]] = [
                     "enemyType4": ZombieType.trans.rawValue,
                     "enemyType5": ZombieType.boomer.rawValue,
                     "enemyType6": ZombieType.plant.rawValue,
-                    "count": 50
+                    "count": 10
                 ],
-                [
-                    "enemyType1": ZombieType.walker.rawValue,
-                    "enemyType2": ZombieType.sword.rawValue,
-                    "enemyType3": ZombieType.runner.rawValue,
-                    "enemyType4": ZombieType.trans.rawValue,
-                    "enemyType5": ZombieType.boomer.rawValue,
-                    "enemyType6": ZombieType.plant.rawValue,
-                    "count": 50
-                ],
-                [
-                    "enemyType1": ZombieType.walker.rawValue,
-                    "enemyType2": ZombieType.sword.rawValue,
-                    "enemyType3": ZombieType.runner.rawValue,
-                    "enemyType4": ZombieType.trans.rawValue,
-                    "enemyType5": ZombieType.boomer.rawValue,
-                    "enemyType6": ZombieType.plant.rawValue,
-                    "count": 50
-                ]
+//                [
+//                    "enemyType1": ZombieType.walker.rawValue,
+//                    "enemyType2": ZombieType.sword.rawValue,
+//                    "enemyType3": ZombieType.runner.rawValue,
+//                    "enemyType4": ZombieType.trans.rawValue,
+//                    "enemyType5": ZombieType.boomer.rawValue,
+//                    "enemyType6": ZombieType.plant.rawValue,
+//                    "count": 50
+//                ],
+//                [
+//                    "enemyType1": ZombieType.walker.rawValue,
+//                    "enemyType2": ZombieType.sword.rawValue,
+//                    "enemyType3": ZombieType.runner.rawValue,
+//                    "enemyType4": ZombieType.trans.rawValue,
+//                    "enemyType5": ZombieType.boomer.rawValue,
+//                    "enemyType6": ZombieType.plant.rawValue,
+//                    "count": 50
+//                ]
                     
             
             

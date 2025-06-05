@@ -42,7 +42,7 @@ class Zombie: SKSpriteNode {
     private(set) var currentState: ZombieState = .moving
 
     // 攻击目标
-    private weak var attackTarget: SKNode?
+    weak var attackTarget: SKNode?
 
     // 攻击计时器
     private var attackTimer: TimeInterval = 0
@@ -174,10 +174,6 @@ class Zombie: SKSpriteNode {
         // 切换到攻击状态
         changeState(to: .attacking)
 
-        // 如果有攻击动画，播放攻击动画
-        if let attackAnimation = attackAnimation {
-            self.run(attackAnimation, withKey: "attacking")
-        }
     }
 
     // 执行一次攻击
@@ -185,11 +181,11 @@ class Zombie: SKSpriteNode {
         guard let target = attackTarget else { return }
 
         // 检查目标是否仍然有效
-        if target.parent == nil {
-            // 目标已被移除，恢复移动
-            resumeMovement()
-            return
-        }
+//        if target.parent == nil {
+//            // 目标已被移除，恢复移动
+//            resumeMovement()
+//            return
+//        }
 
         // 如果目标是炮塔，对其造成伤害
         if let tower = target as? Defend {
@@ -198,6 +194,10 @@ class Zombie: SKSpriteNode {
                 // 炮塔已被摧毁，恢复移动
                 resumeMovement()
                 return
+            }
+            // 如果有攻击动画，播放攻击动画
+            if let attackAnimation = attackAnimation {
+                self.run(attackAnimation, withKey: "attacking")
             }
 
             // 对炮塔造成伤害
@@ -214,7 +214,7 @@ class Zombie: SKSpriteNode {
     }
 
     // 恢复移动状态
-    private func resumeMovement() {
+    func resumeMovement() {
         print("僵尸恢复移动状态")
 
         // 清除攻击目标
@@ -256,6 +256,8 @@ class Zombie: SKSpriteNode {
             return
         }
 
+       
+
         // 如果在攻击状态，更新攻击计时器
         if currentState == .attacking {
             attackTimer += deltaTime
@@ -263,6 +265,7 @@ class Zombie: SKSpriteNode {
             // 如果达到攻击间隔，执行攻击
             if attackTimer >= attackInterval {
                 attackTimer = 0
+               
                 performAttack()
             }
         }
@@ -334,7 +337,7 @@ class Zombie: SKSpriteNode {
     private func playFallSound() {
         // 使用 SoundManager 控制音效播放
         if let scene = self.scene {
-            SoundManager.shared.playSoundEffect("death", in: scene)
+            SoundManager.shared.playSoundEffect("zombie_death", in: scene)
         }
     }
 

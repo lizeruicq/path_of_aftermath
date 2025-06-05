@@ -44,7 +44,7 @@ class SoundManager {
                 backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url)
                 backgroundMusicPlayer?.prepareToPlay()
                 backgroundMusicPlayer?.numberOfLoops = -1 // 无限循环
-                backgroundMusicPlayer?.volume = 0.3 // 设置音量
+                backgroundMusicPlayer?.volume = 0.8 // 设置音量
                 print("Successfully created background music player")
             } catch {
                 print("Failed to load background music: \(error)")
@@ -60,6 +60,19 @@ class SoundManager {
         // 配置所有音效（包含不同格式）
         let soundEffects: [String: String] = [
             "touch": "pistol.wav",
+            "chaingun_shot":"chaingun_shot.wav",
+            "click":"click.flac",
+            "zombie_death":"zombie_death.wav",
+            "error":"error.flac",
+            "fall":"fall.wav",
+            "knife_shot":"knife_shot.mp3",
+            "pistol":"pistal.wav",
+            "rifle_shot":"rifle_shot.wav",
+            "shotgun_shot":"shotgun_shot.wav",
+            "super_shot":"super_shot.wav",
+            "tower_destroy":"tower_destroy.mp3",
+            
+            
             // 添加更多音效时可自由指定格式
         ]
 

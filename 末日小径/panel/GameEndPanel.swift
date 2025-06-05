@@ -109,7 +109,7 @@ class GameEndPanel: SKNode {
     
     // 设置按钮
     private func setupButtons() {
-        let buttonWidth: CGFloat = 120
+        let buttonWidth: CGFloat = 80
         let buttonHeight: CGFloat = 50
         let buttonSpacing: CGFloat = 40
         let buttonY = sceneSize.height/2 - 40
@@ -119,7 +119,7 @@ class GameEndPanel: SKNode {
         returnButton.fillColor = SKColor.red.withAlphaComponent(0.8)
         returnButton.strokeColor = SKColor.white
         returnButton.lineWidth = 2
-        returnButton.position = CGPoint(x: sceneSize.width/2 - buttonSpacing, y: buttonY)
+        returnButton.position = CGPoint(x: sceneSize.width/2 - buttonSpacing-10, y: buttonY)
         returnButton.name = "returnButton"
         returnButton.zPosition = 102
         addChild(returnButton)
@@ -139,7 +139,7 @@ class GameEndPanel: SKNode {
         restartButton.fillColor = SKColor.green.withAlphaComponent(0.8)
         restartButton.strokeColor = SKColor.white
         restartButton.lineWidth = 2
-        restartButton.position = CGPoint(x: sceneSize.width/2 + buttonSpacing, y: buttonY)
+        restartButton.position = CGPoint(x: sceneSize.width/2 + buttonSpacing+10, y: buttonY)
         restartButton.name = "restartButton"
         restartButton.zPosition = 102
         addChild(restartButton)
@@ -198,12 +198,12 @@ class GameEndPanel: SKNode {
     private func updateContent() {
         switch endType {
         case .victory:
-            titleLabel.text = "🎉 胜利！"
+            titleLabel.text = "胜利！"
             titleLabel.fontColor = SKColor.yellow
-            subtitleLabel.text = "恭喜您成功完成了这一关！"
+            subtitleLabel.text = "成功保卫防线"
             
         case .defeat:
-            titleLabel.text = "💀 失败"
+            titleLabel.text = "失败"
             titleLabel.fontColor = SKColor.red
             subtitleLabel.text = "僵尸突破了防线，再试一次吧！"
         }

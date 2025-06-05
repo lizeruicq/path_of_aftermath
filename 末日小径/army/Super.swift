@@ -12,10 +12,10 @@ class Super: Defend {
     private let bulletSpeed: CGFloat = 1500.0
 
     // 子弹大小
-    private let bulletSize = CGSize(width: 8, height: 3)
+    private let bulletSize = CGSize(width: 15, height: 3)
 
     // 子弹颜色
-    private let bulletColor = SKColor.yellow
+    private let bulletColor = SKColor.cyan
 
     // 初始化方法
     init() {

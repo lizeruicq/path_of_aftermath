@@ -217,7 +217,7 @@ class GameManager {
             // 所有波次完成，但这种情况通常不会到达，因为checkWaveCompletion会处理
             gameState = .completed
             victoryWaitTimer = 0
-            print("🎉 所有波次已完成，等待3秒后宣布胜利...")
+            
         }
     }
 
@@ -390,7 +390,7 @@ class GameManager {
                 // 最后一波完成，开始胜利等待
                 gameState = .completed
                 victoryWaitTimer = 0
-                print("🎉 最后一波僵尸已被击杀，等待3秒后宣布胜利...")
+                print("最后一波僵尸已被击杀，3秒后宣布胜利...")
             } else {
                 // 当前波次完成，开始下一波倒计时
                 gameState = .countdown
@@ -433,6 +433,15 @@ class GameManager {
 
         // 让僵尸攻击炮塔
         zombie.attack(target: tower)
+    }
+
+    // 主动通知所有攻击该目标的僵尸恢复移动
+    func notifyZombiesTargetDestroyed(_ target: SKNode) {
+        for zombie in activeZombies {
+            if zombie.attackTarget === target {
+                zombie.resumeMovement()
+            }
+        }
     }
 
     // 暂停游戏
@@ -508,7 +517,7 @@ class GameManager {
         LevelProgressManager.shared.completeLevel(currentLevel)
 
         // 打印胜利结果
-        print("🎉 游戏胜利！成功击退了所有僵尸！")
+        print("游戏胜利！成功击退了所有僵尸！")
     }
 
     // 显示游戏结束面板
