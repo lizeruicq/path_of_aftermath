@@ -65,18 +65,21 @@ class MainMenuScene: SKScene {
 
     // 设置游戏标题
     private func setupTitle() {
-        titleLabel = SKLabelNode(fontNamed: "Chalkduster")
+        let titleLabel = SKSpriteNode(texture: ResourceManager.shared.getTexture(named: "logo2"),size: CGSize(width: self.size.width * 0.8, height: self.size.height / 3))
+        titleLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height * 0.7)
+        titleLabel.zPosition = 10  // 确保标题在背景之上
+        addChild(titleLabel)
 
-        if let titleLabel = titleLabel {
-            titleLabel.text = "末日小径"
-            titleLabel.fontSize = 50
-            titleLabel.fontColor = SKColor.white
-            titleLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height * 0.7)
-            titleLabel.zPosition = 10  // 确保标题在背景之上
-
-
-            addChild(titleLabel)
-        }
+//        if let titleLabel = titleLabel {
+//            titleLabel.text = "末日小径"
+//            titleLabel.fontSize = 50
+//            titleLabel.fontColor = SKColor.white
+//            titleLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height * 0.7)
+//            titleLabel.zPosition = 10  // 确保标题在背景之上
+//
+//
+//            addChild(titleLabel)
+//        }
     }
 
     // 设置按钮

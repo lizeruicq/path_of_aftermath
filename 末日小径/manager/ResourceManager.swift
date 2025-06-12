@@ -44,6 +44,8 @@ class ResourceManager {
             textureNames.append("level-\(i)")
         }
         
+        textureNames.append("logo2")
+        
         // 添加僵尸纹理
         for i in 1...7 {
             textureNames.append("walker_move_\(i)")

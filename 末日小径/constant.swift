@@ -37,7 +37,7 @@ let zombieConfigs: [String: [String: Any]] = [
         "name": "行走者",
         "health": 50,
         "speed": NSNumber(value: 60.0),
-        "damage": 15,
+        "damage": 10,
         "attackRate": 1.0,
         "rewardMoney": 2,  // 击杀奖励金币
         "scale":0.18
@@ -89,7 +89,7 @@ let zombieConfigs: [String: [String: Any]] = [
         "speed": NSNumber(value: 110.0),
         "damage": 50,
         "attackRate": 2.0,
-        "rewardMoney": 5,
+        "rewardMoney": 4,
         "scale":0.25
     ],
     
@@ -101,8 +101,8 @@ let towerConfigs: [String: [String: Any]] = [
     TowerType.rifle.rawValue: [
         "name": "rifle",
         "image": "rifle_icon",
-        "attackPower": 5,
-        "fireRate": 1.5,
+        "attackPower": 10,
+        "fireRate": 1.0,
         "health": 35,
         "price": 20,
         "attackRange": NSNumber(value: 250),
@@ -125,14 +125,14 @@ let towerConfigs: [String: [String: Any]] = [
         "fireRate": 2.0,
         "health": 50,
         "price": 30,
-        "attackRange": NSNumber(value: 200),
+        "attackRange": NSNumber(value: 150),
     ],
     
     TowerType.chaingun.rawValue: [
         "name": "chaingun",
         "image": "chaingun_icon",
         "attackPower": 5,
-        "fireRate": 3.0,
+        "fireRate": 3.5,
         "health": 70,
         "price": 50,
         "attackRange": NSNumber(value: 350),
@@ -186,7 +186,7 @@ struct LevelStructure {
         ),
         ChapterConfig(
             id: 3,
-            name: "终章",
+            name: "幸存",
             levels: [
                 LevelInfo(id: 9, name: "小径"),
                 
@@ -210,7 +210,7 @@ struct LevelInfo {
 let levelConfigs: [[String: Any]] = [
     [ // 第一关配置
         "level": 1,
-        "initialFunds": 200, // 初始金币
+        "initialFunds": 250, // 初始金币
         "waves": [
               // walker僵尸
                 [
@@ -223,7 +223,7 @@ let levelConfigs: [[String: Any]] = [
                 ],
                 [
                     "enemyType1": ZombieType.walker.rawValue,
-                    "count": 30
+                    "count": 20
                 ],
                 
         ],
@@ -235,7 +235,7 @@ let levelConfigs: [[String: Any]] = [
     ],
     [ // 第二关配置
         "level": 2,
-        "initialFunds": 200, // 初始金币
+        "initialFunds": 250, // 初始金币
         "waves": [
             [
                 "enemyType1": ZombieType.walker.rawValue,
@@ -279,15 +279,15 @@ let levelConfigs: [[String: Any]] = [
             [
                 "enemyType2": ZombieType.runner.rawValue,
                 "enemyType3": ZombieType.plant.rawValue,
-                "count": 30
+                "count": 20
             ],
             [
                 "enemyType3": ZombieType.plant.rawValue,
-                "count": 40
+                "count": 10
             ],
             [
                 "enemyType3": ZombieType.plant.rawValue,
-                "count": 60
+                "count": 15
             ],
            
 
@@ -320,12 +320,12 @@ let levelConfigs: [[String: Any]] = [
                 "enemyType2": ZombieType.runner.rawValue,
                 "enemyType3": ZombieType.boomer.rawValue,
                 "enemyType4": ZombieType.plant.rawValue,
-                "count": 30
+                "count": 25
             ],
             [
                 "enemyType2": ZombieType.runner.rawValue,
                 "enemyType3": ZombieType.boomer.rawValue,
-                "count": 40
+                "count": 30
             ],
         ],
         "availableTowers": [
@@ -386,7 +386,7 @@ let levelConfigs: [[String: Any]] = [
             ],
             [
                 "enemyType1": ZombieType.runner.rawValue,
-                "enemyType2": ZombieType.runner.rawValue,
+                "enemyType2": ZombieType.boomer.rawValue,
                 "enemyType3": ZombieType.trans.rawValue,
                 "count": 30
             ],
@@ -398,15 +398,16 @@ let levelConfigs: [[String: Any]] = [
             ],
             [
                 "enemyType1": ZombieType.sword.rawValue,
-                "enemyType2": ZombieType.sword.rawValue,
+                "enemyType2": ZombieType.boomer.rawValue,
                 "enemyType3": ZombieType.trans.rawValue,
-                "count": 30
+                "count": 40
             ],
             [
                 "enemyType1": ZombieType.sword.rawValue,
                 "enemyType2": ZombieType.sword.rawValue,
                 "enemyType3": ZombieType.boomer.rawValue,
-                "count": 30
+                "enemyType4": ZombieType.boomer.rawValue,
+                "count": 50
             ],
         ],
         "availableTowers": [
@@ -428,23 +429,25 @@ let levelConfigs: [[String: Any]] = [
                 "count": 20
             ],
             [
-                "enemyType1": ZombieType.runner.rawValue,
+                "enemyType1": ZombieType.sword.rawValue,
+                "enemyType2": ZombieType.boomer.rawValue,
                 "count": 50
             ],
             [
-                "enemyType1": ZombieType.runner.rawValue,
+                "enemyType1": ZombieType.boomer.rawValue,
                 "enemyType2": ZombieType.boomer.rawValue,
                 "enemyType3": ZombieType.sword.rawValue,
                 "count": 40
             ],
             [
-                "enemyType1": ZombieType.runner.rawValue,
+                "enemyType1": ZombieType.boomer.rawValue,
                 "enemyType2": ZombieType.sword.rawValue,
                 "enemyType3": ZombieType.sword.rawValue,
                 "count": 50
             ],
             [
-                "enemyType1": ZombieType.sword.rawValue,
+                "enemyType1": ZombieType.boomer.rawValue,
+                "enemyType2": ZombieType.plant.rawValue,
                 "count": 50
             ],
         ],
@@ -471,21 +474,24 @@ let levelConfigs: [[String: Any]] = [
                 "count": 60
             ],
             [
-                "enemyType1": ZombieType.runner.rawValue,
+                "enemyType1": ZombieType.boomer.rawValue,
                 "enemyType2": ZombieType.trans.rawValue,
+                "enemyType3": ZombieType.sword.rawValue,
                 "count": 70
             ],
             [
-                "enemyType1": ZombieType.runner.rawValue,
+                "enemyType1": ZombieType.boomer.rawValue,
                 "enemyType2": ZombieType.sword.rawValue,
                 "count": 80
             ],
             [
                 "enemyType1": ZombieType.sword.rawValue,
+                "enemyType2": ZombieType.boomer.rawValue,
                 "count": 90
             ],
             [
                 "enemyType1": ZombieType.sword.rawValue,
+                "enemyType2": ZombieType.boomer.rawValue,
                 "count": 100
             ],
         ],
