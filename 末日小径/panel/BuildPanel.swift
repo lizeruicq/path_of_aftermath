@@ -40,7 +40,7 @@ class BuildPanel: SKNode {
         super.init()
 
         // 设置面板位置（屏幕右侧外部）
-        self.position = CGPoint(x: size.width + panelWidth, y: (size.height - panelHeight) / 2)
+        self.position = CGPoint(x: size.width + panelWidth, y: (size.height - panelHeight) / 1.5)
 
         // 设置名称
         self.name = "buildPanel"
@@ -67,7 +67,7 @@ class BuildPanel: SKNode {
     // 设置面板背景
     private func setupBackground() {
         // 创建背景精灵
-        background = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.8), size: CGSize(width: panelWidth, height: panelHeight))
+        background = SKSpriteNode(color: .clear, size: CGSize(width: panelWidth, height: panelHeight))
         background.position = CGPoint.zero
         background.anchorPoint = CGPoint(x: 0, y: 0)
         background.zPosition = 0  // 背景在面板的最底层
@@ -119,7 +119,7 @@ class BuildPanel: SKNode {
     // 创建炮塔列表
     private func createTowerList() {
         // 设置列表参数
-        let itemSize: CGFloat = panelWidth * 0.5
+        let itemSize: CGFloat = panelWidth * 0.8
         let padding: CGFloat = (panelWidth - itemSize) / 2
         let startY = panelHeight - 60 - itemSize / 2
         let spacing: CGFloat = 20
@@ -147,8 +147,8 @@ class BuildPanel: SKNode {
             itemContainer.zPosition = 2  // 确保炮塔项在标题之上
 
             // 创建背景框
-            let itemBackground = SKShapeNode(rectOf: CGSize(width: itemSize, height: itemSize), cornerRadius: 10)
-            itemBackground.fillColor = SKColor.lightGray.withAlphaComponent(0.3)
+            let itemBackground = SKShapeNode(rectOf: CGSize(width: itemSize , height: itemSize ), cornerRadius: 10)
+            itemBackground.fillColor = SKColor.lightGray
             itemBackground.strokeColor = SKColor.white.withAlphaComponent(0.5)
             itemBackground.lineWidth = 2
             itemBackground.position = CGPoint.zero

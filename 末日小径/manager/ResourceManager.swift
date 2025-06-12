@@ -23,6 +23,8 @@ class ResourceManager {
     // 是否已预加载
     private var preloaded = false
     
+//    let buttonimg = SKTexture(imageNamed: "button")
+    
     // 私有初始化方法
     private init() {}
     
@@ -38,7 +40,7 @@ class ResourceManager {
         var textureNames: [String] = []
         
         // 添加关卡背景
-        for i in 1...4 {
+        for i in 1...9 {
             textureNames.append("level-\(i)")
         }
         

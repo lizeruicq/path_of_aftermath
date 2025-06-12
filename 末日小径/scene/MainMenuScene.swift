@@ -82,7 +82,9 @@ class MainMenuScene: SKScene {
     // 设置按钮
     private func setupButtons() {
         // 创建开始游戏按钮
-        startButton = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.7), size: CGSize(width: 200, height: 50))
+        startButton = SKSpriteNode(color: .clear, size: CGSize(width: 200, height: 50))
+//        startButton = SKSpriteNode(texture: ResourceManager.shared.buttonimg, size: CGSize(width: 200, height: 50))
+        startButton?.alpha = 0.8
         startButtonLabel = SKLabelNode(fontNamed: "Helvetica")
 
         if let startButton = startButton, let startButtonLabel = startButtonLabel {
@@ -96,13 +98,15 @@ class MainMenuScene: SKScene {
             startButtonLabel.verticalAlignmentMode = .center
             startButtonLabel.horizontalAlignmentMode = .center
             startButtonLabel.position = CGPoint.zero
+            startButtonLabel.zPosition = 11
 
             startButton.addChild(startButtonLabel)
             addChild(startButton)
         }
         
         // 创建重置进度按钮
-        resetButton = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.7), size: CGSize(width: 200, height: 50))
+        resetButton = SKSpriteNode(color: .clear, size: CGSize(width: 200, height: 50))
+        resetButton?.alpha = 0.8
         resetButtonLabel = SKLabelNode(fontNamed: "Helvetica")
 
         if let resetButton = resetButton, let resetButtonLabel = resetButtonLabel {
@@ -116,13 +120,15 @@ class MainMenuScene: SKScene {
             resetButtonLabel.verticalAlignmentMode = .center
             resetButtonLabel.horizontalAlignmentMode = .center
             resetButtonLabel.position = CGPoint.zero
+            resetButtonLabel.zPosition = 11
 
             resetButton.addChild(resetButtonLabel)
             addChild(resetButton)
         }
 
         // 创建设置按钮
-        settingsButton = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.7), size: CGSize(width: 200, height: 50))
+        settingsButton = SKSpriteNode(color: .clear, size: CGSize(width: 200, height: 50))
+                settingsButton?.alpha = 0.8
         settingsButtonLabel = SKLabelNode(fontNamed: "Helvetica")
 
         if let settingsButton = settingsButton, let settingsButtonLabel = settingsButtonLabel {
@@ -137,7 +143,7 @@ class MainMenuScene: SKScene {
             settingsButtonLabel.verticalAlignmentMode = .center
             settingsButtonLabel.horizontalAlignmentMode = .center
             settingsButtonLabel.position = CGPoint.zero
-
+            settingsButtonLabel.zPosition=11
             settingsButton.addChild(settingsButtonLabel)
             addChild(settingsButton)
         }
@@ -153,13 +159,16 @@ class MainMenuScene: SKScene {
             if node.name == "startButton" 
             // || node.parent?.name == "startButton"
              {
+
                 SoundManager.shared.playSoundEffect("touch",in: self)
+                SoundManager.shared.resetCooldownTimer()
                 startGame()
             } else if node.name == "resetButton"
             // || node.parent?.name == "resetButton" 
             {
                 showConfirmationPanel()
                 SoundManager.shared.playSoundEffect("touch",in: self)
+                
             }
              else if node.name == "settingsButton" 
             //  || node.parent?.name == "settingsButton"

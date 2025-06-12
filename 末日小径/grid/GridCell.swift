@@ -40,6 +40,19 @@ class GridCell: SKNode {
     // 单元格大小
     private var cellSize: CGSize
 
+    // 格子颜色状态
+    enum CellColorState {
+        case normal      // 正常颜色（绿色）
+        case buff1       // 一级加成（浅红色）
+        case buff2       // 二级加成（深红色）
+    }
+
+    private var colorState: CellColorState = .normal {
+        didSet {
+            updateAppearance()
+        }
+    }
+
     // 初始化方法
     init(row: Int, column: Int, size: CGSize) {
         self.row = row
@@ -81,7 +94,23 @@ class GridCell: SKNode {
         // 检查点击位置是否在矩形内
         let result = rect.contains(p)
 
-//        print("GridCell contains: row=\(row), column=\(column), point=\(p), result=\(result)")
+        // print("GridCell contains: row=\(row), column=\(column), point=\(p), result=\(result)")
+
+        // 如果点击位置在单元格内，还需要检查是否点击了摧毁按钮
+        if result {
+            // 遍历所有子节点
+            for child in children {
+                if child.name == "destroyButton" {
+                    // 将点击位置转换为按钮的坐标系
+                    let locationInButton = self.convert(p, to: child)
+                    // 检查是否点击了按钮
+                    if child.contains(locationInButton) {
+                        print("点击位置在摧毁按钮内")
+                        return true
+                    }
+                }
+            }
+        }
 
         return result
     }
@@ -130,20 +159,27 @@ class GridCell: SKNode {
     private func updateAppearance() {
         if isBuildable {
             if hasTower {
-                // 已有炮塔 - 浅灰色透明
-                innerSquare?.fillColor = SKColor.gray.withAlphaComponent(0.2)
-                print("格子(\(row),\(column))更新外观: 灰色 (有炮塔)")
+                // 根据加成等级设置颜色
+                switch colorState {
+                case .normal:
+                    // 正常状态 - 浅灰色透明
+                    innerSquare?.fillColor = SKColor.gray.withAlphaComponent(0.2)
+                case .buff1:
+                    // 一级加成 - 浅红色透明
+                    innerSquare?.fillColor = SKColor.yellow.withAlphaComponent(0.4)
+                case .buff2:
+                    // 二级加成 - 深红色透明
+                    innerSquare?.fillColor = SKColor.orange.withAlphaComponent(0.9)
+                }
             } else {
                 // 可建造且无炮塔 - 浅绿色透明
                 innerSquare?.fillColor = SKColor.green.withAlphaComponent(0.3)
-                print("格子(\(row),\(column))更新外观: 绿色 (可建造，无炮塔)")
             }
             // 显示单元格
             isHidden = false
         } else {
             // 不可建造 - 完全隐藏单元格
             isHidden = true
-            print("格子(\(row),\(column))更新外观: 隐藏 (不可建造)")
         }
     }
 
@@ -177,6 +213,16 @@ class GridCell: SKNode {
         print("显示单元格高亮效果")
     }
 
+    // 设置格子颜色状态
+    public func setColorState(_ state: CellColorState) {
+        colorState = state
+    }
+
+    // 重置格子颜色状态
+    func resetColorState() {
+        colorState = .normal
+    }
+
     // 放置炮塔
     func placeTower(_ newTower: Defend) -> Bool {
         // 如果单元格不可建造或已有炮塔，返回失败
@@ -204,6 +250,9 @@ class GridCell: SKNode {
         // 如果有炮塔，移除它
         if let tower = tower {
             print("GridCell移除炮塔: \(tower.name ?? "未知炮塔")")
+
+            // 重置加成状态
+            resetColorState()
 
             // 创建摧毁效果
             let fadeOut = SKAction.fadeOut(withDuration: 0.5)

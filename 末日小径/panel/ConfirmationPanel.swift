@@ -33,7 +33,7 @@ class ConfirmationPanel: SKNode {
         let panelY = (sceneSize.height - panelHeight) / 2
         self.position = CGPoint(x: panelX, y: panelY)
         // 创建面板背景
-        let panelBackground = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.8), size: CGSize(width: panelWidth, height: panelHeight))
+        let panelBackground = SKSpriteNode(color: SKColor.lightGray.withAlphaComponent(0.5), size: CGSize(width: panelWidth, height: panelHeight))
         panelBackground.position = CGPoint(x: panelWidth/2, y: panelHeight/2)
         panelBackground.zPosition = 100
         addChild(panelBackground)
@@ -75,7 +75,7 @@ class ConfirmationPanel: SKNode {
     // 创建按钮
     private func createButton(text: String, width: CGFloat, height: CGFloat) -> SKShapeNode {
         let button = SKShapeNode(rectOf: CGSize(width: width, height: height), cornerRadius: 10)
-        button.fillColor = SKColor(red: 0.2, green: 0.6, blue: 0.2, alpha: 1.0)
+        button.fillColor = SKColor.clear
         button.strokeColor = SKColor.white
         button.lineWidth = 2
         button.zPosition = 102

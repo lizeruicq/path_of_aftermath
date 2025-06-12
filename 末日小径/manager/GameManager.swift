@@ -103,7 +103,7 @@ class GameManager {
         guard let scene = gameScene else { return }
 
         // 创建按钮背景
-        let button = SKSpriteNode(color: .blue, size: CGSize(width: 200, height: 60))
+        let button = SKSpriteNode(color: .clear, size: CGSize(width: 200, height: 60))
         button.position = CGPoint(x: scene.size.width / 2, y: scene.size.height - 100)
         button.zPosition = 100
         button.name = "readyButton"
@@ -148,7 +148,7 @@ class GameManager {
         // 创建倒计时标签
         let label = SKLabelNode(fontNamed: "Helvetica-Bold")
         label.text = "下一波: \(countdownTime)"
-        label.fontSize = 36
+        label.fontSize = 24
         label.fontColor = .white
         label.position = CGPoint(x: scene.size.width / 2, y: scene.size.height - 100)
         label.zPosition = 100
@@ -457,8 +457,6 @@ class GameManager {
 
         // 设置为暂停状态
         gameState = .paused
-
-        // 暂停场景
         gameScene?.isPaused = true
 
         print("游戏已暂停，之前状态: \(previousGameState)")
@@ -530,6 +528,66 @@ class GameManager {
         // 显示游戏结束面板
         let endType: GameEndType = isVictory ? .victory : .defeat
         scene.gameEndPanel.show(endType: endType)
+    }
+
+    // 获取相邻格子
+    func getAdjacentCells(for cell: GridCell) -> [GridCell] {
+        var adjacentCells: [GridCell] = []
+        
+        // 检查上下左右四个方向
+        let directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] // 上、下、右、左
+//        let directions = [(1, 0), (-1, 0)]
+        
+        for (dx, dy) in directions {
+            let newRow = cell.row + dy
+            let newCol = cell.column + dx
+            
+            // 检查新位置是否在网格范围内
+            if newRow >= 0 && newRow < 19 && newCol >= 0 && newCol < 9 {
+                // 查找对应的格子
+                if let gameScene = gameScene as? GameSceneWithGrid {
+                    for row in gameScene.gridCells {
+                        for adjacentCell in row {
+                            if adjacentCell.row == newRow && adjacentCell.column == newCol {
+                                adjacentCells.append(adjacentCell)
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return adjacentCells
+    }
+    
+    // 更新炮塔加成
+    func updateTowerBuffs(for tower: Defend, in cell: GridCell) {
+        // 获取相邻格子
+        let adjacentCells = getAdjacentCells(for: cell)
+        
+        // 计算相邻相同类型炮塔数量
+        var sameTypeCount = 0
+        for adjacentCell in adjacentCells {
+            if let adjacentTower = adjacentCell.currentTower,
+               adjacentTower.towerName == tower.towerName {
+                sameTypeCount += 1
+            }
+        }
+
+        // 设置加成等级（0-2）
+        let buffLevel = min(2, sameTypeCount)
+        tower.setBuffLevel(buffLevel)
+
+        // 更新格子颜色
+        switch buffLevel {
+        case 1:
+            cell.setColorState(.buff1)
+        case 2:
+            cell.setColorState(.buff2)
+        default:
+            cell.setColorState(.normal)
+        }
     }
 
 }

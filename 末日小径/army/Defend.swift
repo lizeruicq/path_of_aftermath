@@ -21,6 +21,17 @@ class Defend: SKSpriteNode {
     // 攻击力
     var attackPower: Int
 
+    // 基础攻击力（用于重置加成）
+    private var baseAttackPower: Int
+
+    // 加成等级（0-2）
+    private(set) var buffLevel: Int = 0 {
+        didSet {
+            // 根据加成等级更新攻击力
+            updateAttackPower()
+        }
+    }
+
     // 射速（每秒攻击次数）
     var fireRate: Double
 
@@ -58,6 +69,7 @@ class Defend: SKSpriteNode {
     init(texture: SKTexture, name: String, attackPower: Int, fireRate: Double, health: Int, price: Int, attackRange: CGFloat) {
         self.towerName = name
         self.attackPower = attackPower
+        self.baseAttackPower = attackPower
         self.fireRate = fireRate
         self.health = health
         self.price = price
@@ -80,6 +92,7 @@ class Defend: SKSpriteNode {
     init(imageName: String, name: String, attackPower: Int, fireRate: Double, health: Int, price: Int, attackRange: CGFloat) {
         self.towerName = name
         self.attackPower = attackPower
+        self.baseAttackPower = attackPower
         self.fireRate = fireRate
         self.health = health
         self.price = price
@@ -167,8 +180,6 @@ class Defend: SKSpriteNode {
         // 计算炮塔所在的列
         let towerColumn = Int(towerX / columnWidth)
 
-
-
         // 从GameManager获取活着的僵尸数组
         let zombies = GameManager.shared.activeZombies
 
@@ -185,7 +196,6 @@ class Defend: SKSpriteNode {
             // 计算僵尸所在的列
             let zombieColumn = Int(zombieX / columnWidth)
 
-
             // 检查僵尸和炮塔是否在同一列
             if zombieColumn != towerColumn {
                 continue
@@ -198,7 +208,6 @@ class Defend: SKSpriteNode {
             if distance <= self.attackRange && distance < closestDistance {
                 closestZombie = zombie
                 closestDistance = distance
-
             }
         }
 
@@ -206,7 +215,6 @@ class Defend: SKSpriteNode {
         if let target = closestZombie {
             currentTarget = target
             changeState(to: .attacking)
-
         } else {
 
         }
@@ -225,15 +233,12 @@ class Defend: SKSpriteNode {
         let dx = targetPositionInScene.x - selfPositionInScene.x
         let dy = targetPositionInScene.y - selfPositionInScene.y
 
-
-
         // 返回欧几里得距离（直线距离）
         return sqrt(dx * dx + dy * dy)
     }
 
     // 攻击目标
     func attackTarget(_ target: Zombie) {
-
         // 子类实现具体的攻击效果
     }
 
@@ -244,9 +249,12 @@ class Defend: SKSpriteNode {
 
     // 被摧毁
     func destroy() {
-        print("炮塔$towerName)被摧毁")
+        print("炮塔\(towerName)被摧毁")
         if let scene = self.scene {
-            SoundManager.shared.playSoundEffect("tower_destroy", in: scene)
+            if towerName != "cover"
+            {
+                SoundManager.shared.playSoundEffect("tower_destroy", in: scene)
+            }
         }
         changeState(to: .destroyed)
 
@@ -261,7 +269,19 @@ class Defend: SKSpriteNode {
         // 通知父节点（GridCell）炮塔被摧毁
         if let gridCell = self.parent as? GridCell {
             print("通知GridCell炮塔被摧毁，恢复格子为可建造状态")
+            
+            // 获取相邻格子
+            let adjacentCells = GameManager.shared.getAdjacentCells(for: gridCell)
+            
+            // 先移除炮塔
             gridCell.removeTower()
+            
+            // 更新相邻炮塔的加成
+            for adjacentCell in adjacentCells {
+                if let adjacentTower = adjacentCell.currentTower {
+                    GameManager.shared.updateTowerBuffs(for: adjacentTower, in: adjacentCell)
+                }
+            }
         } else {
             // 如果不在GridCell中，直接移除
             print("炮塔不在GridCell中，直接移除")
@@ -309,5 +329,38 @@ class Defend: SKSpriteNode {
     // 停止所有动画
     func stopAllAnimations() {
         self.removeAllActions()
+    }
+
+    // 更新攻击力（根据加成等级）
+    func updateAttackPower() {
+        
+        // 重置为基础攻击力
+        attackPower = baseAttackPower
+        
+        // 根据加成等级增加攻击力
+        if buffLevel > 0 {
+            if let scene = self.scene {
+                SoundManager.shared.playSoundEffect("upshort", in: scene)
+            }
+            // 每级增加20%攻击力
+            let bonus = Double(baseAttackPower) * 0.1 * Double(buffLevel)
+            attackPower = baseAttackPower + Int(bonus)
+        }
+    }
+
+    // 设置加成等级
+    func setBuffLevel(_ level: Int) {
+        // 确保加成等级在0-2之间
+        buffLevel = max(0, min(2, level))
+    }
+
+    // 重置加成
+    func resetBuff() {
+        buffLevel = 0
+    }
+
+    // 简化playShootSound方法，直接调用SoundManager
+    func playShootSound() {
+        SoundManager.shared.playSoundEffect("\(towerName)_shot", in: scene!)
     }
 }

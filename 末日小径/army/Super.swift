@@ -15,22 +15,30 @@ class Super: Defend {
     private let bulletSize = CGSize(width: 15, height: 3)
 
     // 子弹颜色
-    private let bulletColor = SKColor.cyan
+    private var bulletColor = SKColor.cyan
 
     // 初始化方法
     init() {
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "super_idle")
+        let config = towerConfigs[TowerType.supergun.rawValue] ?? [:]
+        let name = config["name"] as? String ?? ""
+        let attackPower = config["attackPower"] as? Int ?? 30
+        let fireRate = config["fireRate"] as? Double ?? 30.0
+        let price = config["price"] as? Int ?? 30
+        let health = config["health"] as? Int ?? 30
+        let attackRange = config["attackRange"] as? CGFloat ?? 30
+            
 
         // 使用步枪特定的属性初始化
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
-            name: "超级战士",
-            attackPower: 5,          // 攻击力
-            fireRate: 2.0,           // 射速（每秒2次）
-            health: 50,              // 生命值
-            price: 100,              // 价格
-            attackRange: 400.0       // 攻击范围
+            name: name,
+            attackPower: attackPower,          // 攻击力
+            fireRate: fireRate,           // 射速（每秒2次）
+            health: health,              // 生命值
+            price: price,              // 价格
+            attackRange: attackRange      // 攻击范围
         )
 
         // 设置步枪特有的属性
@@ -176,12 +184,33 @@ class Super: Defend {
         ]))
     }
 
-    // 播放射击音效
-    private func playShootSound() {
-        // 使用 SoundManager 控制音效播放
-        if let scene = self.scene {
-            SoundManager.shared.playSoundEffect("super_shot", in: scene)
+    // 播放射击动画
+    private func playShootAnimation() {
+        // 从ResourceManager获取动画
+        if let animation = ResourceManager.shared.createAnimation(forKey: "super_shoot", timePerFrame: 0.05) {
+            // 播放射击动画
+            self.run(animation, withKey: "shootAnimation")
+        } else {
+            // 如果从ResourceManager获取失败，创建备用动画
+            print("警告：无法从ResourceManager获取super_shoot动画，创建备用动画")
+
+            // 创建动画帧数组
+            var frames: [SKTexture] = []
+
+            // 加载3帧射击动画
+            for i in 1...5 {
+                let textureName = "super_shoot_\(i)"
+                let texture = ResourceManager.shared.getTexture(named: textureName)
+                frames.append(texture)
+            }
+
+            // 创建射击动画
+            let shootAnimation = SKAction.animate(with: frames, timePerFrame: 0.05, resize: false, restore: true)
+           
+            // 播放射击动画
+            self.run(shootAnimation, withKey: "shootAnimation")
         }
+        playShootSound()
     }
 
     // 开始攻击动画
@@ -207,35 +236,16 @@ class Super: Defend {
         // 恢复原始纹理
         self.texture = ResourceManager.shared.getTexture(named: "super_idle")
     }
-
-    // 播放射击动画
-    private func playShootAnimation() {
-        // 从ResourceManager获取动画
-        if let animation = ResourceManager.shared.createAnimation(forKey: "super_shoot", timePerFrame: 0.05) {
-            // 播放射击动画
-            self.run(animation, withKey: "shootAnimation")
-        } else {
-            // 如果从ResourceManager获取失败，创建备用动画
-            print("警告：无法从ResourceManager获取super_shoot动画，创建备用动画")
-
-            // 创建动画帧数组
-            var frames: [SKTexture] = []
-
-            // 加载3帧射击动画
-            for i in 1...5 {
-                let textureName = "super_shoot_\(i)"
-                let texture = ResourceManager.shared.getTexture(named: textureName)
-                frames.append(texture)
-            }
-
-            // 创建射击动画
-            let shootAnimation = SKAction.animate(with: frames, timePerFrame: 0.05, resize: false, restore: true)
-
-            // 播放射击动画
-            self.run(shootAnimation, withKey: "shootAnimation")
+    
+    override func updateAttackPower() {
+        super.updateAttackPower()
+        switch buffLevel {
+        case 1:
+            bulletColor = SKColor.orange
+        case 2:
+            bulletColor = SKColor.red
+        default:
+            bulletColor = SKColor.cyan
         }
-
-        // 播放射击音效
-        playShootSound()
     }
 }

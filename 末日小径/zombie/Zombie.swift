@@ -169,7 +169,7 @@ class Zombie: SKSpriteNode {
         attackTarget = target
 
         // 重置攻击计时器
-        attackTimer = 0
+        attackTimer = attackInterval - 0.5
 
         // 切换到攻击状态
         changeState(to: .attacking)
@@ -260,6 +260,7 @@ class Zombie: SKSpriteNode {
 
         // 如果在攻击状态，更新攻击计时器
         if currentState == .attacking {
+            
             attackTimer += deltaTime
 
             // 如果达到攻击间隔，执行攻击

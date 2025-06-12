@@ -47,9 +47,15 @@ class LevelSelectionScene: SKScene {
 
             // 调整背景大小以填充整个屏幕
             backgroundNode.size = self.size
-
+            
+            // 创建士兵提示面板
+            let soldierTipPanel = SoldierTipPanel(size: self.size)
+            soldierTipPanel.zPosition = 22
+            
             // 将背景添加到场景
             addChild(backgroundNode)
+            // 将士兵提示面板添加到场景
+            addChild(soldierTipPanel)
         }
     }
 
@@ -82,7 +88,7 @@ class LevelSelectionScene: SKScene {
         // 添加圆角效果
         let cornerRadius: CGFloat = 10
         let roundedBackButton = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: cornerRadius)
-        roundedBackButton.fillColor = SKColor.red.withAlphaComponent(0.8)
+//        roundedBackButton.fillColor = SKColor.red.withAlphaComponent(0.8)
         roundedBackButton.strokeColor = SKColor.white
         roundedBackButton.lineWidth = 2
         roundedBackButton.position = CGPoint(x: size.width / 2, y: buttonY)
@@ -347,3 +353,5 @@ extension LevelSelectionScene: LevelSelectionPanelDelegate {
         showErrorMessage(message)
     }
 }
+
+

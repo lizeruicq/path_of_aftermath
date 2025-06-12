@@ -15,16 +15,25 @@ class Cover: Defend {
     init() {
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "cover")
-
         
+        let config = towerConfigs[TowerType.cover.rawValue] ?? [:]
+        let name = config["name"] as? String ?? ""
+        let attackPower = config["attackPower"] as? Int ?? 30
+        let fireRate = config["fireRate"] as? Double ?? 30.0
+        let price = config["price"] as? Int ?? 30
+        let health = config["health"] as? Int ?? 30
+        let attackRange = config["attackRange"] as? CGFloat ?? 30
+            
+
+        // 使用步枪特定的属性初始化
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
-            name: "掩体",
-            attackPower: 0,          // 攻击力
-            fireRate: 0,           // 射速（每秒2次）
-            health: 100,              // 生命值
-            price: 20,              // 价格
-            attackRange: 0       // 攻击范围
+            name: name,
+            attackPower: attackPower,          // 攻击力
+            fireRate: fireRate,           // 射速（每秒2次）
+            health: health,              // 生命值
+            price: price,              // 价格
+            attackRange: attackRange      // 攻击范围
         )
 
         // 设置刀战特有的属性

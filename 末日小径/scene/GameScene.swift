@@ -160,7 +160,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let location = touch.location(in: self)
         let touchedNodes = nodes(at: location)
 
-        print("触摸位置: \(location)")
 
         // 检查是否点击了准备按钮
         for node in touchedNodes {

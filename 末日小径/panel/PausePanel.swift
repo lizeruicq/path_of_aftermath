@@ -38,7 +38,8 @@ class PausePanel: SKNode {
     init(sceneSize: CGSize) {
         // 计算面板尺寸 (16:9比例，占屏幕高度的1/3)
         panelHeight = sceneSize.height / 3
-        panelWidth = panelHeight * 16 / 9
+//        panelWidth = panelHeight * 16 / 9
+        panelWidth = sceneSize.width * 0.8
         
         super.init()
         
@@ -59,7 +60,7 @@ class PausePanel: SKNode {
         addChild(backgroundOverlay)
         
         // 创建面板背景
-        panelBackground = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.9), size: CGSize(width: panelWidth, height: panelHeight))
+        panelBackground = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.5), size: CGSize(width: panelWidth, height: panelHeight))
         panelBackground.position = CGPoint(x: sceneSize.width / 2, y: sceneSize.height / 2)
         panelBackground.zPosition = 101
         
@@ -70,7 +71,7 @@ class PausePanel: SKNode {
         path.addRoundedRect(in: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius)
         
         let shapeNode = SKShapeNode(path: path)
-        shapeNode.fillColor = SKColor.darkGray.withAlphaComponent(0.9)
+        shapeNode.fillColor = SKColor.darkGray.withAlphaComponent(0.5)
         shapeNode.strokeColor = SKColor.white.withAlphaComponent(0.3)
         shapeNode.lineWidth = 2
         shapeNode.position = panelBackground.position
@@ -89,11 +90,11 @@ class PausePanel: SKNode {
         addChild(titleLabel)
         
         // 创建继续游戏按钮
-        let buttonWidth: CGFloat = panelWidth * 0.6
+        let buttonWidth: CGFloat = panelWidth * 0.4
         let buttonHeight: CGFloat = 50
         let buttonSpacing: CGFloat = 20
         
-        continueButton = SKSpriteNode(color: SKColor.green.withAlphaComponent(0.8), size: CGSize(width: buttonWidth, height: buttonHeight))
+        continueButton = SKSpriteNode(color: SKColor.clear, size: CGSize(width: buttonWidth, height: buttonHeight))
         continueButton.position = CGPoint(x: sceneSize.width / 2, y: sceneSize.height / 2 + buttonSpacing / 2)
         continueButton.zPosition = 102
         continueButton.name = "continueButton"
@@ -104,7 +105,7 @@ class PausePanel: SKNode {
         continueButtonPath.addRoundedRect(in: continueButtonRect, cornerWidth: 10, cornerHeight: 10)
         
         let continueButtonShape = SKShapeNode(path: continueButtonPath)
-        continueButtonShape.fillColor = SKColor.green.withAlphaComponent(0.8)
+//        continueButtonShape.fillColor = SKColor.green.withAlphaComponent(0.8)
         continueButtonShape.strokeColor = SKColor.white.withAlphaComponent(0.5)
         continueButtonShape.lineWidth = 1
         continueButtonShape.position = continueButton.position
@@ -123,7 +124,7 @@ class PausePanel: SKNode {
         addChild(continueLabel)
         
         // 创建退出按钮
-        exitButton = SKSpriteNode(color: SKColor.red.withAlphaComponent(0.8), size: CGSize(width: buttonWidth, height: buttonHeight))
+        exitButton = SKSpriteNode(color: SKColor.clear, size: CGSize(width: buttonWidth, height: buttonHeight))
         exitButton.position = CGPoint(x: sceneSize.width / 2, y: sceneSize.height / 2 - buttonSpacing / 2 - buttonHeight)
         exitButton.zPosition = 102
         exitButton.name = "exitButton"
@@ -134,7 +135,7 @@ class PausePanel: SKNode {
         exitButtonPath.addRoundedRect(in: exitButtonRect, cornerWidth: 10, cornerHeight: 10)
         
         let exitButtonShape = SKShapeNode(path: exitButtonPath)
-        exitButtonShape.fillColor = SKColor.red.withAlphaComponent(0.8)
+//        exitButtonShape.fillColor = SKColor.red.withAlphaComponent(0.8)
         exitButtonShape.strokeColor = SKColor.white.withAlphaComponent(0.5)
         exitButtonShape.lineWidth = 1
         exitButtonShape.position = exitButton.position

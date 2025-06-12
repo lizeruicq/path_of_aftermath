@@ -47,7 +47,7 @@ class LevelSelectionPanel: SKNode {
         let panelWidth = panelSize.width * 0.9
         let panelHeight = panelSize.height * 0.75  // 留出空间给返回按钮
         let panelX = panelSize.width * 0.05
-        let panelY = panelSize.height * 0.1  // 从更高的位置开始，为返回按钮留空间
+        let panelY = panelSize.height * 0.15  // 从更高的位置开始，为返回按钮留空间
 
         // // 创建面板背景
         // let panelBackground = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.3), size: CGSize(width: panelWidth, height: panelHeight))
@@ -57,7 +57,7 @@ class LevelSelectionPanel: SKNode {
 
         // 大关间距和尺寸配置
         let chapterSpacing: CGFloat = 20
-        let chapterHeight: CGFloat = (panelHeight - chapterSpacing * 4) / 3 // 3个大关
+        let chapterHeight: CGFloat = (panelHeight - chapterSpacing * 4) / 4 // 3个大关
 
         // 创建每个大关的容器
         for (chapterIndex, chapter) in LevelStructure.chapters.enumerated() {
@@ -80,7 +80,7 @@ class LevelSelectionPanel: SKNode {
         container.position = CGPoint(x: 0, y: yPosition)
 
         // 大关背景
-        let chapterBackground = SKSpriteNode(color: SKColor.darkGray.withAlphaComponent(0.5), size: CGSize(width: containerWidth, height: containerHeight))
+        let chapterBackground = SKSpriteNode(color: SKColor.clear, size: CGSize(width: containerWidth, height: containerHeight))
         chapterBackground.position = CGPoint(x: containerWidth/2, y: containerHeight/2)
         chapterBackground.zPosition = 2
         container.addChild(chapterBackground)
@@ -245,13 +245,13 @@ class LevelSelectionPanel: SKNode {
         let isUnlocked = progressManager.isLevelUnlocked(level.id)
 
         // 按钮背景颜色
-        let buttonColor = isUnlocked ? SKColor.blue.withAlphaComponent(0.8) : SKColor.gray.withAlphaComponent(0.5)
+        let buttonColor = isUnlocked ? SKColor.clear : SKColor.red.withAlphaComponent(0.1)
 
         // 添加圆角效果（通过创建圆角矩形路径）
         let cornerRadius: CGFloat = 10
         let roundedRect = SKShapeNode(rectOf: buttonSize, cornerRadius: cornerRadius)
         roundedRect.fillColor = buttonColor
-        roundedRect.strokeColor = isUnlocked ? SKColor.white : SKColor.darkGray
+        roundedRect.strokeColor = SKColor.white
         roundedRect.lineWidth = 2
         roundedRect.zPosition = 4
         roundedRect.name = "level_\(level.id)"
@@ -260,26 +260,26 @@ class LevelSelectionPanel: SKNode {
         let levelLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
         levelLabel.text = level.name
         levelLabel.fontSize = 16
-        levelLabel.fontColor = isUnlocked ? SKColor.white : SKColor.darkGray
-        levelLabel.position = CGPoint(x: 0, y: 8)
+        levelLabel.fontColor = SKColor.white
+//        levelLabel.position = CGPoint(x: 0, y: 6)
         levelLabel.verticalAlignmentMode = .center
         levelLabel.horizontalAlignmentMode = .center
         levelLabel.zPosition = 6
 
-        // 关卡编号标签
-        let levelNumberLabel = SKLabelNode(fontNamed: "Helvetica")
-        levelNumberLabel.text = "\(level.id)"
-        levelNumberLabel.fontSize = 12
-        levelNumberLabel.fontColor = isUnlocked ? SKColor.lightGray : SKColor.darkGray
-        levelNumberLabel.position = CGPoint(x: 0, y: -8)
-        levelNumberLabel.verticalAlignmentMode = .center
-        levelNumberLabel.horizontalAlignmentMode = .center
-        levelNumberLabel.zPosition = 6
+//        // 关卡编号标签
+//        let levelNumberLabel = SKLabelNode(fontNamed: "Helvetica")
+//        levelNumberLabel.text = "\(level.id)"
+//        levelNumberLabel.fontSize = 12
+//        levelNumberLabel.fontColor = isUnlocked ? SKColor.lightGray : SKColor.darkGray
+//        levelNumberLabel.position = CGPoint(x: 0, y: -8)
+//        levelNumberLabel.verticalAlignmentMode = .center
+//        levelNumberLabel.horizontalAlignmentMode = .center
+//        levelNumberLabel.zPosition = 6
 
         // 组装按钮
         buttonContainer.addChild(roundedRect)
         buttonContainer.addChild(levelLabel)
-        buttonContainer.addChild(levelNumberLabel)
+//        buttonContainer.addChild(levelNumberLabel)
 
         // 保存按钮引用
         levelButtons[level.id] = roundedRect
@@ -288,7 +288,7 @@ class LevelSelectionPanel: SKNode {
         if !isUnlocked {
             let lockIcon = SKLabelNode(fontNamed: "Helvetica-Bold")
             lockIcon.text = "封锁中..."
-            lockIcon.fontSize = 20
+            lockIcon.fontSize = 15
             lockIcon.position = CGPoint(x: buttonSize.width/2 - 15, y: buttonSize.height/2 - 15)
             lockIcon.zPosition = 7
             buttonContainer.addChild(lockIcon)

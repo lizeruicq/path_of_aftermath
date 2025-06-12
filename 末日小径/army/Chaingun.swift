@@ -15,22 +15,30 @@ class Chaingun: Defend {
     private let bulletSize = CGSize(width: 8, height: 3)
 
     // 子弹颜色
-    private let bulletColor = SKColor.yellow
+    private var bulletColor = SKColor.yellow
 
     // 初始化方法
     init() {
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "chaingun_idle")
+        let config = towerConfigs[TowerType.chaingun.rawValue] ?? [:]
+        let name = config["name"] as? String ?? ""
+        let attackPower = config["attackPower"] as? Int ?? 30
+        let fireRate = config["fireRate"] as? Double ?? 30.0
+        let price = config["price"] as? Int ?? 30
+        let health = config["health"] as? Int ?? 30
+        let attackRange = config["attackRange"] as? CGFloat ?? 30
+            
 
         // 使用步枪特定的属性初始化
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
-            name: "机枪手",
-            attackPower: 2,          // 攻击力
-            fireRate: 6.0,           // 射速（每秒2次）
-            health: 50,              // 生命值
-            price: 200,              // 价格
-            attackRange: 400.0       // 攻击范围
+            name: name,
+            attackPower: attackPower,          // 攻击力
+            fireRate: fireRate,           // 射速（每秒2次）
+            health: health,              // 生命值
+            price: price,              // 价格
+            attackRange: attackRange      // 攻击范围
         )
 
         // 设置机枪特有的属性
@@ -176,12 +184,12 @@ class Chaingun: Defend {
     }
 
     // 播放射击音效
-    private func playShootSound() {
-        // 使用 SoundManager 控制音效播放
-        if let scene = self.scene {
-            SoundManager.shared.playSoundEffect("chaingun_shot", in: scene)
-        }
-    }
+//    private func playShootSound() {
+//        // 使用 SoundManager 控制音效播放
+////        if let scene = self.scene {
+////            SoundManager.shared.playSoundEffect("chaingun_shot", in: scene)
+////        }
+//    }
 
     // 开始攻击动画
     override func startAttackingAnimation() {
@@ -219,5 +227,17 @@ class Chaingun: Defend {
 
         // 播放射击音效
         playShootSound()
+    }
+    
+    override func updateAttackPower() {
+        super.updateAttackPower()
+        switch buffLevel {
+        case 1:
+            bulletColor = SKColor.orange
+        case 2:
+            bulletColor = SKColor.red
+        default:
+            bulletColor = SKColor.yellow
+        }
     }
 }

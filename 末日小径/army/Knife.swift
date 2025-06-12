@@ -18,16 +18,24 @@ class Knife: Defend {
     init() {
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "knife_idle")
+        let config = towerConfigs[TowerType.knife.rawValue] ?? [:]
+        let name = config["name"] as? String ?? ""
+        let attackPower = config["attackPower"] as? Int ?? 30
+        let fireRate = config["fireRate"] as? Double ?? 30.0
+        let price = config["price"] as? Int ?? 30
+        let health = config["health"] as? Int ?? 30
+        let attackRange = config["attackRange"] as? CGFloat ?? 30
+            
 
         // 使用步枪特定的属性初始化
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
-            name: "刀战手",
-            attackPower: 10,          // 攻击力
-            fireRate: 2.0,           // 射速（每秒2次）
-            health: 50,              // 生命值
-            price: 100,              // 价格
-            attackRange: 70.0       // 攻击范围
+            name: name,
+            attackPower: attackPower,          // 攻击力
+            fireRate: fireRate,           // 射速（每秒2次）
+            health: health,              // 生命值
+            price: price,              // 价格
+            attackRange: attackRange      // 攻击范围
         )
 
         // 设置刀战特有的属性
@@ -173,23 +181,17 @@ class Knife: Defend {
         ]))
     }
 
-    // 播放射击音效
-    private func playShootSound() {
-        // 使用 SoundManager 控制音效播放
-        if let scene = self.scene {
-            SoundManager.shared.playSoundEffect("knife_shot", in: scene)
-        }
-    }
-
     // 开始攻击动画
     override func startAttackingAnimation() {
-        // 创建轻微的旋转动作，模拟炮塔瞄准
-        let rotateRight = SKAction.rotate(byAngle: 0.05, duration: 0.1)
-        let rotateLeft = SKAction.rotate(byAngle: -0.05, duration: 0.1)
-        let rotateSequence = SKAction.sequence([rotateRight, rotateLeft])
-
-        // 循环执行旋转动作
-        self.run(SKAction.repeatForever(rotateSequence), withKey: "rotateAnimation")
+        
+        playShootAnimation()
+//        // 创建轻微的旋转动作，模拟炮塔瞄准
+//        let rotateRight = SKAction.rotate(byAngle: 0.05, duration: 0.1)
+//        let rotateLeft = SKAction.rotate(byAngle: -0.05, duration: 0.1)
+//        let rotateSequence = SKAction.sequence([rotateRight, rotateLeft])
+//
+//        // 循环执行旋转动作
+//        self.run(SKAction.repeatForever(rotateSequence), withKey: "rotateAnimation")
     }
 
     // 停止攻击动画
@@ -227,12 +229,12 @@ class Knife: Defend {
 
             // 创建射击动画
             let shootAnimation = SKAction.animate(with: frames, timePerFrame: 0.05, resize: false, restore: true)
-
+            
             // 播放射击动画
             self.run(shootAnimation, withKey: "shootAnimation")
         }
-
-        // 播放射击音效
         playShootSound()
     }
+    
+   
 }

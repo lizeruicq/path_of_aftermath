@@ -51,7 +51,7 @@ class GameEndPanel: SKNode {
         
         // 计算面板尺寸 (16:9比例，占屏幕高度的40%)
         panelHeight = sceneSize.height * 0.4
-        panelWidth = panelHeight * 16 / 9
+        panelWidth = sceneSize.width * 0.9
         
         super.init()
         
@@ -116,9 +116,9 @@ class GameEndPanel: SKNode {
         
         // 返回按钮
         returnButton = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: 10)
-        returnButton.fillColor = SKColor.red.withAlphaComponent(0.8)
+//        returnButton.fillColor = SKColor.red.withAlphaComponent(0.8)
         returnButton.strokeColor = SKColor.white
-        returnButton.lineWidth = 2
+        returnButton.lineWidth = 1
         returnButton.position = CGPoint(x: sceneSize.width/2 - buttonSpacing-10, y: buttonY)
         returnButton.name = "returnButton"
         returnButton.zPosition = 102
@@ -126,7 +126,7 @@ class GameEndPanel: SKNode {
         
         returnButtonLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
         returnButtonLabel.text = "返回"
-        returnButtonLabel.fontSize = 18
+        returnButtonLabel.fontSize = 16
         returnButtonLabel.fontColor = SKColor.white
         returnButtonLabel.verticalAlignmentMode = .center
         returnButtonLabel.horizontalAlignmentMode = .center
@@ -136,9 +136,9 @@ class GameEndPanel: SKNode {
         
         // 重新开始按钮
         restartButton = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: 10)
-        restartButton.fillColor = SKColor.green.withAlphaComponent(0.8)
+//        restartButton.fillColor = SKColor.green.withAlphaComponent(0.8)
         restartButton.strokeColor = SKColor.white
-        restartButton.lineWidth = 2
+        restartButton.lineWidth = 1
         restartButton.position = CGPoint(x: sceneSize.width/2 + buttonSpacing+10, y: buttonY)
         restartButton.name = "restartButton"
         restartButton.zPosition = 102
@@ -146,7 +146,7 @@ class GameEndPanel: SKNode {
         
         restartButtonLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
         restartButtonLabel.text = "重新开始"
-        restartButtonLabel.fontSize = 18
+        restartButtonLabel.fontSize = 16
         restartButtonLabel.fontColor = SKColor.white
         restartButtonLabel.verticalAlignmentMode = .center
         restartButtonLabel.horizontalAlignmentMode = .center
@@ -199,7 +199,7 @@ class GameEndPanel: SKNode {
         switch endType {
         case .victory:
             titleLabel.text = "胜利！"
-            titleLabel.fontColor = SKColor.yellow
+            titleLabel.fontColor = SKColor.green
             subtitleLabel.text = "成功保卫防线"
             
         case .defeat:

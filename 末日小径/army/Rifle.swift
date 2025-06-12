@@ -15,26 +15,35 @@ class Rifle: Defend {
     private let bulletSize = CGSize(width: 8, height: 3)
 
     // 子弹颜色
-    private let bulletColor = SKColor.yellow
+    private var bulletColor = SKColor.yellow
 
     // 初始化方法
     init() {
         // 使用ResourceManager获取纹理
         let texture = ResourceManager.shared.getTexture(named: "rifle_idle")
+        
+        let config = towerConfigs[TowerType.rifle.rawValue] ?? [:]
+        let name = config["name"] as? String ?? ""
+        let attackPower = config["attackPower"] as? Int ?? 30
+        let fireRate = config["fireRate"] as? Double ?? 30.0
+        let price = config["price"] as? Int ?? 30
+        let health = config["health"] as? Int ?? 30
+        let attackRange = config["attackRange"] as? CGFloat ?? 30
+            
 
         // 使用步枪特定的属性初始化
         super.init(
             texture: texture, // 使用ResourceManager获取的纹理
-            name: "步枪手",
-            attackPower: 3,          // 攻击力
-            fireRate: 2.0,           // 射速（每秒2次）
-            health: 50,              // 生命值
-            price: 100,              // 价格
-            attackRange: 400.0       // 攻击范围
+            name: name,
+            attackPower: attackPower,          // 攻击力
+            fireRate: fireRate,           // 射速（每秒2次）
+            health: health,              // 生命值
+            price: price,              // 价格
+            attackRange: attackRange      // 攻击范围
         )
 
         // 设置步枪特有的属性
-        self.setScale(0.9) // 调整大小
+        self.setScale(1.0) // 调整大小
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -176,16 +185,10 @@ class Rifle: Defend {
         ]))
     }
 
-    // 播放射击音效
-    private func playShootSound() {
-        // 使用 SoundManager 控制音效播放
-        if let scene = self.scene {
-            SoundManager.shared.playSoundEffect("rifle_shot", in: scene)
-        }
-    }
-
     // 开始攻击动画
     override func startAttackingAnimation() {
+        
+//        playShootAnimation()
         // 创建轻微的旋转动作，模拟炮塔瞄准
         let rotateRight = SKAction.rotate(byAngle: 0.05, duration: 0.1)
         let rotateLeft = SKAction.rotate(byAngle: -0.05, duration: 0.1)
@@ -230,12 +233,23 @@ class Rifle: Defend {
 
             // 创建射击动画
             let shootAnimation = SKAction.animate(with: frames, timePerFrame: 0.05, resize: false, restore: true)
-
+            
             // 播放射击动画
             self.run(shootAnimation, withKey: "shootAnimation")
+            
         }
-
-        // 播放射击音效
         playShootSound()
+    }
+    
+    override func updateAttackPower() {
+        super.updateAttackPower()
+        switch buffLevel {
+        case 1:
+            bulletColor = SKColor.orange
+        case 2:
+            bulletColor = SKColor.red
+        default:
+            bulletColor = SKColor.yellow
+        }
     }
 }

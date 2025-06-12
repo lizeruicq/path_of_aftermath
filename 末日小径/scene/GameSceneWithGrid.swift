@@ -8,7 +8,10 @@
 import SpriteKit
 import GameplayKit
 
+
 class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, PausePanelDelegate, GameEndPanelDelegate {
+    
+
 
     // 网格尺寸
     let gridRows: Int = 19
@@ -74,7 +77,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
     }
 
     // 存储所有可建造的网格单元格的数组
-    private var gridCells: [[GridCell]] = []
+    var gridCells: [[GridCell]] = []
 
     // 网格容器节点
     private var gridContainer: SKNode!
@@ -101,6 +104,11 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
     private var currencyDisplay: SKNode!
     private var currencyIcon: SKSpriteNode!
     private var currencyLabel: SKLabelNode!
+    
+    // 金币显示UI
+    private var cheatDisplay: SKNode!
+    private var cheatLabel: SKLabelNode!
+    private var cheatButton: SKSpriteNode!
 
     // 暂停功能
     private var pauseButton: SKSpriteNode!
@@ -155,6 +163,8 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         // 创建暂停按钮
         setupPauseButton()
+        
+        setupCheatButton()
 
         // 创建暂停面板
         setupPausePanel()
@@ -226,12 +236,12 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
     // 设置暂停按钮
     private func setupPauseButton() {
-        // 创建暂停按钮
+        // 创建按钮
         let buttonSize: CGFloat = 50
-        pauseButton = SKSpriteNode(color: SKColor.gray.withAlphaComponent(0.8), size: CGSize(width: buttonSize, height: buttonSize))
+        pauseButton = SKSpriteNode(color: .clear, size: CGSize(width: buttonSize, height: buttonSize))
 
         // 设置按钮位置（右下角）
-        pauseButton.position = CGPoint(x: self.size.width - buttonSize/2 - 20, y: buttonSize/2 + 20)
+        pauseButton.position = CGPoint(x: self.size.width - buttonSize/2 - 20, y: buttonSize/2 + 40)
         pauseButton.zPosition = 1000
         pauseButton.name = "pauseButton"
 
@@ -242,7 +252,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         path.addRoundedRect(in: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius)
 
         let shapeNode = SKShapeNode(path: path)
-        shapeNode.fillColor = SKColor.gray.withAlphaComponent(0.8)
+//        shapeNode.fillColor = SKColor.gray.withAlphaComponent(0.8)
         shapeNode.strokeColor = SKColor.white.withAlphaComponent(0.5)
         shapeNode.lineWidth = 2
         shapeNode.position = pauseButton.position
@@ -272,6 +282,33 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         addChild(rightLine)
 
         print("暂停按钮已创建")
+    }
+    
+    // 设置cheat按钮
+    private func setupCheatButton() {
+        // 创建容器节点
+        cheatDisplay = SKNode()
+        cheatDisplay.position = CGPoint(x: 60, y: 160)
+        cheatDisplay.zPosition = 1000 // 确保显示在最上层
+        cheatDisplay.name = "cheatButton"
+        let iconTexture = SKTexture(imageNamed: "coin_icon")
+        cheatButton = SKSpriteNode(texture: iconTexture,  color: .white, size: CGSize(width: 20, height: 20))
+        cheatButton.position = CGPoint(x: -40, y: 0)
+        
+        cheatLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
+        cheatLabel.fontSize = 16
+        cheatLabel.fontColor = .white
+        cheatLabel.horizontalAlignmentMode = .left
+        cheatLabel.verticalAlignmentMode = .center
+        cheatLabel.position = CGPoint(x: -30, y: 0)
+        cheatLabel.text = "作弊+"
+
+        // 添加标签到容器
+        cheatDisplay.addChild(cheatButton)
+        cheatDisplay.addChild(cheatLabel)
+        // 添加容器到场景
+        addChild(cheatDisplay)
+
     }
 
     // 设置暂停面板
@@ -395,15 +432,14 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
     // 更新方法
     override func update(_ currentTime: TimeInterval) {
         // 计算时间增量
-        if lastUpdateTime == 0 {
-            lastUpdateTime = currentTime
-        }
-
-        let dt = currentTime - lastUpdateTime
+        let deltaTime = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
-
+        
+        // 更新音效管理器
+        SoundManager.shared.update(deltaTime: deltaTime)
+        
         // 更新所有炮塔
-        updateTowers(deltaTime: dt)
+        updateTowers(deltaTime: deltaTime)
 
         // 调用父类的更新方法
         super.update(currentTime)
@@ -479,8 +515,6 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         let location = recognizer.location(in: self.view)
         let sceneLocation = self.convertPoint(fromView: location)
 
-        print("处理单元格点击: 位置=\(sceneLocation)")
-
         // 首先检查是否点击了游戏结束面板
         if gameEndPanel.isShowing {
             gameEndPanel.handleTouch(at: sceneLocation)
@@ -494,43 +528,24 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
             }
         }
 
-        // 检查是否点击了暂停按钮
+        // 检查是否点击了暂停按钮或摧毁按钮
         let touchedNodes = nodes(at: sceneLocation)
         for node in touchedNodes {
             if node.name == "pauseButton" {
                 handlePauseButtonTap()
                 return
             }
-        }
-
-        // 首先检查是否点击了摧毁按钮
-        if let button = destroyButton {
-            print("检查摧毁按钮点击，按钮存在")
-            print("按钮位置: \(button.position)")
-            print("按钮父节点: \(button.parent?.name ?? "无名称")")
-
-            // 将点击位置转换为按钮的父节点坐标系
-            if let buttonParent = button.parent {
-                let locationInButtonParent = self.convert(sceneLocation, to: buttonParent)
-                print("点击位置在按钮父节点坐标系中: \(locationInButtonParent)")
-                print("按钮边界检查: \(button.contains(locationInButtonParent))")
-
-                // 检查点击位置是否在按钮内
-                if button.contains(locationInButtonParent) {
-                    print("✅ 点击了摧毁按钮")
-                    handleDestroyButtonTap()
-                    return
-                } else {
-                    print("❌ 点击位置不在摧毁按钮内")
-                }
-            } else {
-                print("❌ 摧毁按钮没有父节点")
+            if node.name == "destroyButton" {
+                handleDestroyButtonTap()
+                return
             }
-        } else {
-            print("没有摧毁按钮存在")
+            if node.name == "cheatButton"{
+                handleCheatButtonTap()
+                return
+            }
         }
 
-        // 遍历所有网格单元格，检查点击位置是否在单元格内
+        // 检查是否点击了网格单元格
         for row in gridCells {
             for cell in row {
                 // 将点击位置转换为单元格坐标系
@@ -538,7 +553,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
                 // 检查点击位置是否在单元格内
                 if cell.contains(locationInCell) {
-                    print("点击了单元格: row=\(cell.row), column=\(cell.column)")
+                    
 
                     // 高亮显示
                     cell.highlight()
@@ -578,59 +593,40 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         }
 
         // 如果点击了其他区域，隐藏建造面板和摧毁按钮
-        print("点击了其他区域，隐藏建造面板和摧毁按钮")
-        buildPanel.hide()
         hideDestroyButton()
+        buildPanel.hide()
         selectedCell = nil
     }
 
     // BuildPanelDelegate方法：处理炮塔选择
     func didSelectTower(_ towerType: TowerType) {
-        // 确保有选中的格子
         guard let cell = selectedCell else { return }
 
         // 获取炮塔价格
-        let towerPrice = PlayerEconomyManager.shared.getTowerPrice(type: towerType)
+        let price = PlayerEconomyManager.shared.getTowerPrice(type: towerType)
 
         // 检查是否有足够的金币
-        if !PlayerEconomyManager.shared.canAfford(towerPrice) {
-            print("金币不足，无法建造炮塔")
+        if PlayerEconomyManager.shared.canAfford(price) {
+            // 创建炮塔
+            if let tower = TowerFactory.shared.createTower(type: towerType) {
+                // 放置炮塔
+                if cell.placeTower(tower) {
+                    // 扣除金币
+                    PlayerEconomyManager.shared.spendFunds(price)
+                    
 
-            // 播放错误音效
-//            let errorSoundAction = SKAction.playSoundFileNamed("error.mp3.flac", waitForCompletion: false)
-//            run(errorSoundAction)
-            SoundManager.shared.playSoundEffect("error", in: self)
-//            if let scene = self.scene {
-//                SoundManager.shared.playSoundEffect("chaingun_shot", in: scene)
-//            }
-
-            // 显示金币不足提示（可选）
-            showInsufficientFundsMessage()
-
-            return
-        }
-
-        // 创建选中类型的炮塔
-        if let tower = TowerFactory.shared.createTower(type: towerType) {
-            // 尝试放置炮塔
-            if cell.placeTower(tower) {
-                // 扣除金币
-                if PlayerEconomyManager.shared.spendFunds(towerPrice) {
-                    // 放置成功，播放音效
-//                    let placeSoundAction = SKAction.playSoundFileNamed("click.mp3.flac", waitForCompletion: false)
-//                    run(placeSoundAction)
+                    // 检查相邻炮塔并应用加成
+                    checkAndApplyAdjacentBuffs(for: tower, in: cell)
+                    
                     SoundManager.shared.playSoundEffect("click", in: self)
 
-                    // 清除选中的格子
-                    selectedCell = nil
-
-                    // 隐藏建造面板
-                    buildPanel.hide()
-                } else {
-                    // 金币不足（理论上不会发生，因为前面已经检查过）
-                    cell.removeTower()
+//                    // 播放建造音效
+//                    SoundManager.shared.playSoundEffect("tower_build", in: self)
                 }
             }
+        } else {
+            // 显示金币不足提示
+            showInsufficientFundsMessage()
         }
     }
 
@@ -638,6 +634,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
     private func showInsufficientFundsMessage() {
         // 创建提示标签
         let messageLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
+        SoundManager.shared.playSoundEffect("error", in: self)
         messageLabel.text = "金币不足!"
         messageLabel.fontSize = 30
         messageLabel.fontColor = .red
@@ -693,9 +690,8 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
     // 创建摧毁按钮
     private func createDestroyButton(for tower: Defend, in cell: GridCell) {
-
         // 创建圆形按钮
-        let buttonRadius: CGFloat = 10
+        let buttonRadius: CGFloat = 10  // 恢复原有大小
         destroyButton = SKShapeNode(circleOfRadius: buttonRadius)
 
         guard let button = destroyButton else {
@@ -748,7 +744,6 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         cell.addChild(button)
         print("按钮已添加到格子，按钮父节点: \(button.parent?.name ?? "无名称")")
 
-
         // 添加出现动画
         button.alpha = 0
         button.setScale(0.5)
@@ -759,8 +754,7 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
 
         button.run(showAnimation)
 
-        print("摧毁按钮创建完成")
-        print("=== 创建摧毁按钮完成 ===")
+     
     }
 
     // 隐藏摧毁按钮
@@ -784,6 +778,44 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         }
     }
 
+    // 检查相邻炮塔并应用加成
+    private func checkAndApplyAdjacentBuffs(for tower: Defend, in cell: GridCell) {
+        // 获取相邻格子
+        let adjacentCells = GameManager.shared.getAdjacentCells(for: cell)
+        
+        // 计算相邻相同类型炮塔数量
+        var sameTypeCount = 0
+        for adjacentCell in adjacentCells {
+            if let adjacentTower = adjacentCell.currentTower,
+               adjacentTower.towerName == tower.towerName {
+                sameTypeCount += 1
+            }
+        }
+
+        // 设置加成等级（0-2）
+        let buffLevel = min(2, sameTypeCount)
+        tower.setBuffLevel(buffLevel)
+
+        // 更新格子颜色
+        switch buffLevel {
+        case 1:
+            cell.setColorState(.buff1)
+        case 2:
+            cell.setColorState(.buff2)
+        default:
+            cell.setColorState(.normal)
+        }
+
+        // 更新相邻炮塔的加成
+        for adjacentCell in adjacentCells {
+            if let adjacentTower = adjacentCell.currentTower,
+               adjacentTower.towerName == tower.towerName {
+                // 重新计算相邻炮塔的加成
+                GameManager.shared.updateTowerBuffs(for: adjacentTower, in: adjacentCell)
+            }
+        }
+    }
+
     // 处理摧毁按钮点击
     private func handleDestroyButtonTap() {
         print("=== 开始处理摧毁按钮点击 ===")
@@ -804,16 +836,21 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         print("炮塔所在格子: row=\(gridCell.row), column=\(gridCell.column)")
         print("手动摧毁炮塔: \(tower.name ?? "未知炮塔")")
 
-        // 播放摧毁音效
-//        let destroySoundAction = SKAction.playSoundFileNamed("tower_destroy.mp3", waitForCompletion: false)
-//        run(destroySoundAction)
+        // 获取相邻格子
+        let adjacentCells = GameManager.shared.getAdjacentCells(for: gridCell)
         
         // 隐藏摧毁按钮
         hideDestroyButton()
 
-        // 摧毁炮塔（不给予资金奖励）
-        print("调用gridCell.removeTower()")
+        // 摧毁炮塔
         gridCell.removeTower()
+
+        // 更新相邻炮塔的加成
+        for adjacentCell in adjacentCells {
+            if let adjacentTower = adjacentCell.currentTower {
+                GameManager.shared.updateTowerBuffs(for: adjacentTower, in: adjacentCell)
+            }
+        }
 
         print("炮塔已被手动摧毁，格子恢复为可建造状态")
         print("=== 摧毁按钮点击处理完成 ===")
@@ -835,6 +872,30 @@ class GameSceneWithGrid: GameScene, BuildPanelDelegate, PlayerEconomyDelegate, P
         } else {
             print("当前游戏状态不允许暂停")
         }
+    }
+    
+    private func handleCheatButtonTap(){
+        PlayerEconomyManager.shared.addFunds(50)
+        let errorLabel = SKLabelNode(fontNamed: "Helvetica-Bold")
+        errorLabel.text = "作弊增加金币50"
+        errorLabel.fontSize = 24
+        errorLabel.fontColor = SKColor.red
+        errorLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 150)
+        errorLabel.zPosition = 100
+
+        // 添加到场景
+        addChild(errorLabel)
+
+        // 创建淡出动作
+        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        let wait = SKAction.wait(forDuration: 1.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let remove = SKAction.removeFromParent()
+
+        // 运行动作序列
+        errorLabel.alpha = 0
+        errorLabel.run(SKAction.sequence([fadeIn, wait, fadeOut, remove]))
+        
     }
 
     // MARK: - PausePanelDelegate
