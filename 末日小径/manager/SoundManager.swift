@@ -39,6 +39,7 @@ class SoundManager {
         
         if isSoundEnabled {
             playBackgroundMusic()
+            resetCooldownTimer()
         } else {
             stopBackgroundMusic()
         }
